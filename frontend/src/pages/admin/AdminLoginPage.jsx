@@ -16,7 +16,7 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/user/login", {
+    const response = await fetch("https://safety-features.onrender.com/api/user/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,10 +28,11 @@ export default function AdminLoginPage() {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem('token', json.authtoken);
-      navigate("/admin");        //this is redirecting me to the home page after I login
+      navigate("/admin-dashboard");        //this is redirecting me to the home page after I login
       console.log("Logged In SUCCESSFULLY", "success")
     }
     else {
+      
       console.log("Invalid Credentials", "danger");
     }
   }
