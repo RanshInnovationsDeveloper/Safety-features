@@ -25,7 +25,7 @@ import { useContext, useRef, useState, useEffect } from 'react'
 // let center = { lat: 29.6857, lng: 76.9905 }
 function App() {
   const { isLoaded } = useJsApiLoader({
-      googleMapsApiKey: 'AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI',
+      googleMapsApiKey: process.env.REACT_APP_API_KEY,
       libraries: ['places'],
   })
   const { places, addPlace, deletePlace, editPlace, getPlaces,getCoordinates, userCoordinates } = useContext(pageContext);
@@ -147,7 +147,7 @@ function App() {
       if (!center) return;
 
       const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=10000&type=police&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=10000&type=police&key=${process.env.REACT_APP_API_KEY}`
       );
 
       setPoliceStations(response.data.results);

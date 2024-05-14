@@ -10,7 +10,7 @@ import axios from "axios";
 
 function App() {
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
+    googleMapsApiKey: process.env.REACT_APP_API_KEY,
     libraries: ["places"],
   });
 
@@ -52,10 +52,10 @@ function App() {
     if (!center) return;
 
     const response = await axios.get(
-      ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=police&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
+      ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=police&key=${process.env.REACT_APP_API_KEY}`
     );
     const response1 = await axios.get(
-      ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=hospital&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
+      ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=hospital&key=${process.env.REACT_APP_API_KEY}`
     );
 
     setPoliceStations(response.data.results);
