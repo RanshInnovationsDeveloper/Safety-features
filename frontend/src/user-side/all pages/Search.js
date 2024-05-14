@@ -26,7 +26,7 @@ let dest
 
 function App() {
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.REACT_APP_API_KEY,
+        googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
         libraries: ['places'],
     })
     const { places, addPlace, deletePlace, editPlace, getPlaces } = useContext(pageContext);
@@ -68,7 +68,7 @@ function App() {
         });
         try {
             const response = await axios.get(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${process.env.REACT_APP_API_KEY}`
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
             );
             const place = response.data.results[0].formatted_address;
             setPlaceName(place);
@@ -107,7 +107,7 @@ function App() {
         if (!center) return;
 
         const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=10000&type=police&key=${process.env.REACT_APP_API_KEY}`
+            `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=10000&type=police&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
         );
 
         setPoliceStations(response.data.results);
@@ -118,7 +118,7 @@ function App() {
             return
         }
         // eslint-disable-next-line no-undef
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${destiantionRef.current.value}&key=${process.env.REACT_APP_API_KEY}`);
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${destiantionRef.current.value}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`);
         const destination = response.data.results[0].geometry.location;
         dest = { lat: destination.lat, lng: destination.lng };
         if (map) {
