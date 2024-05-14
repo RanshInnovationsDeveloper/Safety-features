@@ -1,0 +1,85 @@
+.main-content {
+    height: 90px;
+    width: 100%;
+    position: fixed;
+    top: 20px;
+    left: 0;
+    z-index: 999;
+    padding: 8px 30px;
+  }
+  
+  .content-wrapper {
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .logo-section {
+    width: 340px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    width: 60px;
+    height: 70px;
+    margin-right: 12px;
+  }
+  
+  .police-image {
+    width: 80px;
+    height: 80px;
+    margin-right: 12px;
+  }
+  
+  .police-title {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .action-section {
+    width: 428px;
+    height: 70px;
+    display: flex;
+    background-color: black;
+  }
+  
+  .buttons-section {
+    width: 172px;
+    height: 80px;
+    background-color: white;
+
+  }
+  
+  .chief-minister-section {
+    width: 256px;
+    height: 70px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .cm-image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .cm-info {
+    text-align: center;
+    font-size: 12px;
+    margin: 0;
+    margin-top: 5px;
+  }
+  .bg{
+    background-color: #d8e4ec;
+  }

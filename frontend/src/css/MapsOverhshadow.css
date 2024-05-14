@@ -1,0 +1,41 @@
+/* .container {
+    position: fixed;
+    top: 130px;
+    height: 135px;
+    width: 100%;
+    z-index: 1000;
+    padding: 30px 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  .yellow-box {
+    height: 70px;
+    width: 350px;
+    background-color: yellow;
+    border-radius: 50px;
+  }
+
+  .button {
+    background-color: #4e7690;
+    color: white;
+    border-radius: 5px;
+    padding: 7px 22px;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+  } */
+  .bg{
+    background-color: #4E7690;
+  }
+  .bg2{
+    background-color: #6C6C6C;
+  }
+  .cc{
+       width:100vw;
+  }
+  @media (min-width:100px){
+     .cc{
+      width:100vw;
+     }
+  }

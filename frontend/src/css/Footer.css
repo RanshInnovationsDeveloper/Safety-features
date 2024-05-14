@@ -1,0 +1,45 @@
+.footer-container {
+    background-color: #4e7690;
+    height: 4.75rem;
+    width: 100%;
+    position: fixed;
+    top: 120px;
+    left: 0;
+    z-index: 1000;
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .footer-content {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+  
+  .footer-icon {
+    height: 20px;
+    width: 20px;
+    margin-right: 30px;
+  }
+  .footer-icons {
+    margin-right: 30px;
+  }
+  
+  .footer-text {
+    color: white;
+    margin: 0;
+    font-size: 16px;
+    margin-right: 37px;
+  }
+  
+  .login-button {
+    background-color: red;
+    color: white;
+    border-radius: 5px;
+    margin-left: 70px ;
+    padding: 5px 30px;
+    border: none;
+    cursor: pointer;
+  }
+  
