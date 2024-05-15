@@ -1,3 +1,4 @@
+import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -16,12 +17,12 @@ import {
   Autocomplete,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import { useRef, useState, useEffect } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import './styles/User.css';
 import { IoCloseCircleSharp, IoSearchCircleSharp } from "react-icons/io5";
 import { IoMdCloseCircle } from "react-icons/io";
+
 function App() {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
@@ -29,7 +30,7 @@ function App() {
   });
 
   const [center, setCenter] = useState({ lat: null, lng: null });
-  const [map, setMap] = useState(/** @type google.maps.Map */(null));
+  const [map, setMap] = useState(null);
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState("");
   const [duration, setDuration] = useState("");
@@ -56,7 +57,7 @@ function App() {
     }
   }
 
-  const destiantionRef = useRef()
+  const destination1Ref = useRef(null);
 
   const darkmode = [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -139,9 +140,11 @@ function App() {
     },
   ];
 
-  let destination1 = { lat: 30.3398, lng: 76.3869 }; // Los Angles30.7333° N, 76.7794°
-  const clearRoute = () => {
-    setDirectionsResponse(null);
+  const clearRoute =async () => {
+    if (destination1Ref.current) {
+      destination1Ref.current.value = '';
+    }
+    await setDirectionsResponse(null);
     setDistance('');
     setDuration('');
   };
@@ -203,23 +206,25 @@ function App() {
   }
 
   const handleMarkerClick = async (event) => {
+    await clearRoute(); // Clear the previous route
     const { latLng } = event;
-    destination1 = { lat: latLng.lat(), lng: latLng.lng() };
-    console.log(destination1);
+    destination1Ref.current = { lat: latLng.lat(), lng: latLng.lng() };
     // eslint-disable-next-line no-undef
-    const directionsService = new google.maps.DirectionsService();
-    const results = await directionsService.route({
+    let directionsService = new google.maps.DirectionsService();
+    let results = await directionsService.route({
       origin: center,
-      destination: destination1,
+      destination: destination1Ref.current,
       // eslint-disable-next-line no-undef
       travelMode: google.maps.TravelMode.WALKING,
     });
     console.log(results);
     setDirectionsResponse(results);
+
     setDistance(results.routes[0].legs[0].distance.text);
     setDuration(results.routes[0].legs[0].duration.text);
-    setModal(true); // Open modal when marker is clicked
+    setModal(true); // Open modal when marker is clicked()
   };
+  
 
 
   return (
@@ -247,7 +252,7 @@ function App() {
         >
           {policeStations.map((station, index) => (
             <>
-              <Marker position={center} onClick={handleMarkerClick} />
+              <Marker position={center} />
               <Marker
                 key={index}
                 position={{
@@ -284,6 +289,7 @@ function App() {
           {directionsResponse && (
             <>
               <DirectionsRenderer
+                key={JSON.stringify(directionsResponse)}
                 directions={directionsResponse}
                 options={{
                   suppressMarkers: true, // Suppress default markers
@@ -320,8 +326,6 @@ function App() {
                     type="text"
                     className="focus:outline-none  w-[20rem] h-[3.4rem] rounded-full bg-transparent  placeholder:text-[#1F2521]"
                     placeholder="Search by police station, name, etc.."
-                    ref={destiantionRef}
-
                   />
                 </Autocomplete>
 
