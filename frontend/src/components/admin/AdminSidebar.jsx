@@ -53,8 +53,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
             <p className="text-[14px]">Add New Location</p>
           </button>
           <div className=" ">
-
-          <AddLocationPopup open={open}/>
+          <AddLocationPopup open={open} setOpen={setOpen} />
           </div>
           
         </div>
