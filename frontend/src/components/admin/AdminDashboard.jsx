@@ -1,12 +1,19 @@
-import React, {useState} from 'react'
+import React, {useState,useContext, useEffect} from 'react'
 import { AiOutlineDelete } from "react-icons/ai";
+import pageContext from "../../notes/pageContext";
 import { FaPlus } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import { FaArrowDown } from "react-icons/fa6";
 import AddLocationPopup from './AddLocationPopup';
+
 function AdminDashboard() {
   const [selectedRows, setSelectedRows] = useState([]);
+  const { places, addPlace, deletePlace, editPlace, getPlaces, getCoordinates, userCoordinates } = useContext(pageContext);
+
+  useEffect(()=>{
+    getPlaces();
+  })
 
   const data = [
     // Your array of data here
