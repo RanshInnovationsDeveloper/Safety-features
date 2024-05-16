@@ -87,7 +87,8 @@ function App() {
               const response = await axios.get(
                   `https://maps.googleapis.com/maps/api/geocode/json?latlng=${clickedLat},${clickedLng}&key=YOUR_API_KEY`
               );
-              const place = response.data.results[0].formatted_address;
+            //   n-3
+              const place = response.data.results[(response.data.results.length - 3)>=0?(response.data.results.length - 3):(response.data.results.length - 2)].formatted_address;
               setPlaceName(place);
               setAddress(place);
               setCoordinates(`${clickedLat}, ${clickedLng}`);

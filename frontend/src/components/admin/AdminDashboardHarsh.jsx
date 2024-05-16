@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, {useState,useContext, useEffect} from 'react'
 import { AiOutlineDelete } from "react-icons/ai";
+import pageContext from "../../notes/pageContext";
 import { FaPlus } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
@@ -7,6 +8,8 @@ import { FaArrowDown } from "react-icons/fa6";
 import axios from "axios";
 import { toast } from "react-toastify";
 import AddLocationPopup from "./AddLocationPopup";
+
+//This one coming from harsh code
 import {
   calculateExpiration,
   calculateDistance,
@@ -14,76 +17,8 @@ import {
 
 function AdminDashboard() {
   const [selectedRows, setSelectedRows] = useState([]);
-  const [processedData, setProcessedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState();
-  const [queryedData, setQueryedData] = useState([]);
-  const [center, setCenter] = useState({ lat: 0, lng: 0 });
-  const [query, setQuery] = useState("");
 
-  //TODO:This function can be added to context and this data can be fetched straight form ocntext then
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCenter({
-          lat: position?.coords?.latitude,
-          lng: position?.coords?.longitude,
-        });
-      });
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-      toast.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
-  //This one fetches the data from the API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const items = await axios.get(
-          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        );
-        setData(items?.data);
-        setIsLoading(false);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
-    fetchData();
-  }, []);
-  console.log(data?.[6]?.expiration);
-  console.log(data?.[0]?.createdAt);
-  //This one calculates the time left and distance of the location and also filter out expired data'
-  useEffect(() => {
-    if (data) {
-      const newData = data.map((item) => {
-        const timeLeft = calculateExpiration(item.expiration, item.createdAt);
-        const distance = calculateDistance(
-          item?.coordinates[0],
-          item?.coordinates[1],
-          center
-        );
-        return { ...item, timeLeft, distance };
-      });
-      const filteredData = newData.filter(
-        (item) => item?.timeLeft !== "Expired"
-      );
-      setProcessedData(filteredData);
-      setIsLoading(false);
-    }
-  }, [data]);
-
-  //This one is to query
-  useEffect(() => {
-    if (query === "") setQueryedData(processedData);
-    const filteredData = processedData.filter(
-      (item) =>
-        item?.name.toLowerCase().includes(query.toLowerCase()) ||
-        item?.address.toLowerCase().includes(query.toLowerCase())
-    );
-    setQueryedData(filteredData);
-  }, [data, query]);
-
-  const items = [
+  const data = [
     // Your array of data here
     {
       Location: "Police Station",
