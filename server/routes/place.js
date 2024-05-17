@@ -1,18 +1,41 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const Place = require('../models/Place');
 
 // Route 1: Fetch all places
+
 router.get('/fetchallplaces', async (req, res) => {
     try {
-        const places = await Place.find();
-        res.json(places);
+        // Fetch all places
+        let places = await Place.find();
+
+        // Filter places where active is not equal to createdAt and the difference is more than 5 hours
+        const currentDate = Date.now();
+        places = places.filter(place => {
+            const createdAt = new Date(place.createdAt);
+            const active = new Date(place.active);
+            const timeDifference = Math.abs(currentDate - active);
+            const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+            return place.active !== place.createdAt && hoursDifference > 5;
+        });
+
+        // Delete filtered places
+        for (const place of places) {
+            await Place.findByIdAndDelete(place._id);
+        }
+
+        // Fetch all places after cleanup
+        const updatedPlaces = await Place.find();
+        res.json(updatedPlaces);
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Some error occurred");
     }
 });
+
+
 
 // Route 2: Add a new place
 router.post("/addplace", async (req, res) => {
@@ -34,7 +57,7 @@ router.post("/addplace", async (req, res) => {
             name,
             address,
             coordinates,
-            expiration: expiration ? expiration * 3600 : null,
+            expiration: expiration ? expiration : null,
         });
         const savedPlace = await place.save();
         res.json(savedPlace);
@@ -77,6 +100,18 @@ router.put('/updateplace/:id', [
 });
 
 // Route 4: Delete an existing place
+router.put('/archiveplace/:id', async (req, res) => {
+    try {
+        const place = await Place.findByIdAndUpdate(req.params.id, { active: Date.now() }, { new: true });
+        if (!place) {
+            return res.status(404).json({ msg: 'Place not found' });
+        }        res.send(place)
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Some error occurred");
+    }
+});
+// Route 5: Delete an existing place permanently
 router.delete('/deleteplace/:id', async (req, res) => {
     try {
         const place = await Place.findByIdAndDelete(req.params.id);

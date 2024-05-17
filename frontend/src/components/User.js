@@ -22,6 +22,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import './styles/User.css';
 import { IoCloseCircleSharp, IoSearchCircleSharp } from "react-icons/io5";
+import {calculateDateDifferenceInHours} from '../commonly used functions/functions'
 import { IoMdCloseCircle } from "react-icons/io";
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
     libraries: ["places"],
   });
 
-  const { places, addPlace, deletePlace, editPlace, getPlaces, getCoordinates, userCoordinates } = useContext(pageContext);
+  const { places, addPlace, deletePlace, editPlace, getPlaces, archiveplace } = useContext(pageContext);
   const [center, setCenter] = useState({ lat: null, lng: null });
   const [map, setMap] = useState(null);
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -198,6 +199,7 @@ function App() {
     setClicked(res.data.results)
   };
 
+
   useEffect(() => {
     getPlaces();
     getNearbySafety();
@@ -206,6 +208,7 @@ function App() {
   if (!isLoaded) {
     return <SkeletonText />;
   }
+  console.log(center)
 
   const handleMarkerClick = async (event) => {
     await clearRoute(); // Clear the previous route
@@ -290,7 +293,8 @@ function App() {
             </>
           ))}
           {places.map((station, index) => (
-                      <Marker
+            station.active==station.createdAt?
+                     ( <Marker
                           key={index}
                           position={{ lat: station.coordinates[0], lng: station.coordinates[1] }}
                           icon={{
@@ -298,7 +302,8 @@ function App() {
                               scaledSize: new window.google.maps.Size(32, 32) // Adjust the size as needed
                           }}
                           title={station.address}
-                      />
+                      />)
+                      :null
                   ))}
 
           {directionsResponse && (

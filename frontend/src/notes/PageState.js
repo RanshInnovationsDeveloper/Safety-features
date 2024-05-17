@@ -6,6 +6,7 @@ const PageState = (props) => {
 
   const placesInitial = [];
   const [places, setPlaces] = useState(placesInitial);
+  const [currplaces, setCurrplaces] = useState(placesInitial);
   const [userCoordinates, setUserCoordinates] = useState({}); // State to hold user coordinates
 
   
@@ -84,6 +85,20 @@ const PageState = (props) => {
     }
   };
 
+  const archiveplace = async (id) => {
+    try {
+      await fetch(`${host}/api/place/archiveplace/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   const editPlace = async (id, name, address, coordinates, expiration) => {
     try {
       await fetch(`${host}/api/place/updateplace/${id}`, {
@@ -107,7 +122,7 @@ const PageState = (props) => {
   };
 
   return (
-    <pageContext.Provider value={{ places, addPlace, deletePlace, editPlace, getPlaces, getCoordinates, userCoordinates}}>
+    <pageContext.Provider value={{ places, addPlace, deletePlace, editPlace, archiveplace, getPlaces, getCoordinates, userCoordinates,currplaces, setCurrplaces}}>
       {props.children}
     </pageContext.Provider>
   );

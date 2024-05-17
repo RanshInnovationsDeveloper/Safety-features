@@ -88,8 +88,11 @@ function App() {
                   `https://maps.googleapis.com/maps/api/geocode/json?latlng=${clickedLat},${clickedLng}&key=YOUR_API_KEY`
               );
             //   n-3
-              const place = response.data.results[(response.data.results.length - 3)>=0?(response.data.results.length - 3):(response.data.results.length - 2)].formatted_address;
-              setPlaceName(place);
+              const place = response.data.results[0].address_components;
+              const cityComponent=place.find((component) =>
+                component.types.includes("locality")
+              );
+              setPlaceName(cityComponent.long_name);
               setAddress(place);
               setCoordinates(`${clickedLat}, ${clickedLng}`);
           } catch (error) {
