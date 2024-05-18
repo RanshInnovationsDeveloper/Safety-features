@@ -14,18 +14,16 @@ router.get('/fetchallplaces', async (req, res) => {
         // Filter places where active is not equal to createdAt and the difference is more than 5 hours
         const currentDate = Date.now();
         places = places.filter(place => {
-            const createdAt = new Date(place.createdAt);
             const active = new Date(place.active);
             const timeDifference = Math.abs(currentDate - active);
             const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-            return place.active !== place.createdAt && hoursDifference > 5;
+            return ((place.active.getTime() !== place.createdAt.getTime()) && hoursDifference > 5);
         });
 
         // Delete filtered places
         for (const place of places) {
             await Place.findByIdAndDelete(place._id);
         }
-
         // Fetch all places after cleanup
         const updatedPlaces = await Place.find();
         res.json(updatedPlaces);
