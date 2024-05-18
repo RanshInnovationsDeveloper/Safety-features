@@ -52,7 +52,7 @@ const PageState = (props) => {
     }
   };
 
-  const addPlace = async (name, address, coordinates, expiration) => {
+  const addPlace = async (name, address, coordinates, expiration, author) => {
     try {
       const response = await fetch(`${host}/api/place/addplace`, {
         method: "POST",
@@ -60,7 +60,7 @@ const PageState = (props) => {
           "Content-Type": "application/json",
           "auth-token": localStorage.getItem("token"),
         },
-        body: JSON.stringify({ name, address, coordinates, expiration }),
+        body: JSON.stringify({ name, address, coordinates, expiration, author }),
       });
       const place = await response.json();
       setPlaces(places.concat(place));

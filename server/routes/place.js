@@ -43,7 +43,7 @@ router.post("/addplace", async (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { name, address, coordinates, expiration } = req.body;
+        const { name, address, coordinates, expiration, author } = req.body;
 
         // Check if a place with the same coordinates exists
         const existingPlace = await Place.findOne({ coordinates });
@@ -56,6 +56,7 @@ router.post("/addplace", async (req, res) => {
             address,
             coordinates,
             expiration: expiration ? expiration : null,
+            author
         });
         const savedPlace = await place.save();
         res.json(savedPlace);

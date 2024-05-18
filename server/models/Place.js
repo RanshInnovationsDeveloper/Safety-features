@@ -23,6 +23,10 @@ const PlaceSchema = new mongoose.Schema({
     active:{
         type: Date,
         default: Date.now
+    },
+    author:{
+        type: String,
+        required: true,
     }
 });
 

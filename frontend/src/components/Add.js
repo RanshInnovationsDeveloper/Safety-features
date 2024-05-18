@@ -55,6 +55,7 @@ function App() {
   useEffect(() => {
     if (userCoordinates && userCoordinates.coordinates && userCoordinates.coordinates.length > 0) {
         console.log(userCoordinates);
+        console.log( userCoordinates.userId.userid);
         const [lat, lng] = userCoordinates.coordinates[0]; // Extract lat and lng from the array
         if (lat && lng) {
             setCenter({ lat, lng });
@@ -92,8 +93,9 @@ function App() {
               const cityComponent=place.find((component) =>
                 component.types.includes("locality")
               );
+            //   console.log(cityComponent.long_name)
               setPlaceName(cityComponent.long_name);
-              setAddress(place);
+              setAddress(cityComponent.long_name);
               setCoordinates(`${clickedLat}, ${clickedLng}`);
           } catch (error) {
               console.error('Error fetching place name:', error);
@@ -128,12 +130,13 @@ function App() {
           // Convert coordinates string to array
           const coordArray = coordinates.split(',').map(coord => parseFloat(coord.trim()));
 
-          await addPlace(name, address, coordArray, parseInt(expiration));
+          await addPlace(name, address, coordArray, parseInt(expiration), userCoordinates.userId.userid);
           // Clear form fields after successful addition
           setName('');
           setAddress('');
           setCoordinates('');
           setExpiration('-1');
+        console.log("place added")
       } catch (error) {
           console.error('Error adding place:', error.message);
       }

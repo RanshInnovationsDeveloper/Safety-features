@@ -73,7 +73,7 @@ router.get('/userCoordinates', fetchuser, async (req, res) => {
 
       // If user found, send back coordinates
       if (user) {
-          res.json({ coordinates: user.coordinates });
+          res.json({ coordinates: user.coordinates, userId: user });
       } else {
           // If user not found, send error message
           res.status(404).json({ error: "User not found" });
