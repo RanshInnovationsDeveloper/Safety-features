@@ -147,7 +147,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import AddLocationMap from "./AddLocationMap";
 const AddLocationPopup = ({ open, setOpen }) => {
-  const [position, setPosition] = useState({ lat: null, lng: null });
+  // const [position, setPosition] = useState({ lat: null, lng: null });
   const [nestedOpen, setNestedOpen] = useState(false);
   const [doubleNestedOpen, setDoubleNestedOpen] = useState(false);
   const [currPage, setCurrPage] = useState(1);
@@ -155,7 +155,8 @@ const AddLocationPopup = ({ open, setOpen }) => {
     temporary: false,
     permanent: false,
   });
-  const [coordinates, setCoordinates] = useState('');
+  const [category, setCategory] = useState("police-station");
+  const [coordinates, setCoordinates] = useState({ lat: "", lng: "" });
   const [name, setName] = useState();
   const [hours, setHours] = useState(0);
   const [days, setDays] = useState(0);
@@ -164,20 +165,20 @@ const AddLocationPopup = ({ open, setOpen }) => {
   const [pincode, setPincode] = useState("");
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setPosition({
-          lat: position?.coords?.latitude,
-          lng: position?.coords?.longitude,
-        });
-      });
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-      toast.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
+  const author=(localStorage.getItem("token")); 
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition((position) => {
+  //       setPosition({
+  //         lat: position?.coords?.latitude,
+  //         lng: position?.coords?.longitude,
+  //       });
+  //     });
+  //   } else {
+  //     console.log("Geolocation is not supported by this browser.");
+  //     toast.error("Geolocation is not supported by this browser.");
+  //   }
+  // }, []);
 
   //   const handleNestedOpen = () => {
   //     setNestedOpen(true);
@@ -203,43 +204,61 @@ const AddLocationPopup = ({ open, setOpen }) => {
 
   const handleNext = () => {
     if (currPage === 1) {
-      if (!city) {
-        toast.error("Choose a value for city");
+      if (!name || !city || !address || !pincode || !state || !country) {
+        toast.error("Please Fill All Values");
         return;
       }
+
+      if (coordinates?.lat=="" || coordinates?.lng=="" ) {
+        console.log("coordinates", coordinates)
+        toast.error("Please select location on map");
+        return;
+      }
+
       setCurrPage((prev) => prev + 1);
     }
     if (currPage === 2) {
-      try {
+      const coordinate=[coordinates?.lat,coordinates?.lng]
         const postObj = {
           name: String(name),
-          address: String(city),
-          coordinates: [position?.lat, position?.lng],
+          address:`${address}++${city}++${state}++${pincode}++${country}`, //address=address+city+state+pincode+country
+          coordinates: coordinate,
           expiration: options?.permanent
             ? -1
-            : Number(days * 24 * 60 + hours * 60),
+            : Number((days * 24 * 60) + (hours * 60)),
+          author:author
         };
-        console.log(Number(days * 24 * 60 + hours * 60));
+        // console.log(Number(days * 24 * 60 + hours * 60));
 
         if (
           !name ||
           !city ||
-          !position ||
           (options.permanent === false && options.temporary === false)
         ) {
           toast.error("Fill all the details");
           return;
         }
-        const post = axios.post(
+        console.log("PostObj",postObj)
+        axios.post(
           "https://safety-features.onrender.com/api/place/addplace",
           postObj
-        );
-        setCurrPage((prev) => prev + 1);
-        toast.success("Location added successfully");
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
-      }
+        ).then((res) => {
+          toast.success("Location added successfully");
+          setCurrPage((prev) => prev + 1);
+          setCoordinates({ lat: "", lng: "" });
+          setName("");
+          setHours(0);
+          setDays(0);
+          setCity("");
+          setAddress("");
+          setPincode("");
+          setState("");
+          setCountry("");
+        }).catch((err) => {
+          console.log(err);
+          toast.error(err.message);
+         } );
+        
     }
   };
 
@@ -248,42 +267,47 @@ const AddLocationPopup = ({ open, setOpen }) => {
       {open && (
         <div className="fixed inset-0 flex items-center justify-center z-20">
           <div className="bg-white p-6 rounded shadow-lg w-[50vw] h-[80vh] flex flex-col overflow-hidden">
-            {currPage === 1 && (
-              <div className="flex flex-row gap-30">
-                <div>
-                  <h2 className="text-2xl mb-4 text-black">Add Location</h2>
-                  <p className="text-[#4e7690] font-size-[14px] ">
-                    Fill all the details given below to add the location
-                  </p>
-                  <h2>Details</h2>
-                  <p className="text-[#4e7690]">
-                    Note:Fields are editable and can be changed
-                  </p>
-                  <div>
-                  <label for="placename">Place Name (required)</label>
-                  <input name="placename" type="text" value={name} placeholder="Eg: Jaipur"/>
-                  <label for="category">Category (required)</label>
-                  <select name="category">
-                    <options value="police-station">Police Station</options>
-                    <options value="hospital">Hospital</options>
-                  </select>
-                  </div>
-                  <label for="address">Address(required)</label>
-                  <input name="address" type="text" value={address} />
-                  <div>
-                    <div>
-                      <label for="city">City (required)</label>
-                      <input name="city" type="text" value={city} placeholder="Eg: Jaipur"/>
-                      <label for="pincode">Pincode (required)</label>
-                      <input name="pincode" type="text" value={pincode} placeholder="Eg: Jaipur"/>
-                    </div>
-                    <div>
-                      <label for="state">State (required)</label>
-                      <input name="state" type="text" value={state} placeholder="Eg: Rajasthan"/>
-                      <label for="country">Country/Region(required)</label>
-                      <input name="country" type="text" value={country} placeholder="Eg: India"/>
-                    </div>
-                  </div>
+          {currPage === 1 && (
+  <div className="flex flex-row gap-30">
+    <div className="overflow-y-auto max-h-[calc(100vh-2rem)]">
+      <h2 className="text-2xl mb-4 text-black">Add Location</h2>
+      <p className="text-[#4e7690] font-size-[14px] ">
+        Fill all the details given below to add the location
+      </p>
+      <h2>Details</h2>
+      <p className="text-[#4e7690]">
+        Note:Fields are editable and can be changed
+      </p>
+                  {/* //Scroll waala part */}
+                  <div className="flex space-x-4">
+    <div className="space-y-2 flex-1">
+      <label htmlFor="placename" className="block text-gray-700">Place Name (required)</label>
+      <input name="placename" type="text" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Eg:Police Station" className="w-full p-2 border border-gray-300 rounded"/>
+    </div>
+    <div className="space-y-2 flex-1">
+      <label htmlFor="category" className="block text-gray-700">Category (required)</label>
+      <select name="category" className="w-full p-2 border border-gray-300 rounded" value={category} onChange={(e)=>setCategory(e.target.value)}>
+        <option value="police-station">Police Station</option>
+        <option value="hospital">Hospital</option>
+      </select>
+    </div>
+  </div>
+  <label htmlFor="address" className="block text-gray-700">Address(required)</label>
+  <input name="address" type="text" value={address} onChange={(e)=>setAddress(e.target.value)} className="w-full p-2 border border-gray-300 rounded"/>
+  <div className="grid grid-cols-2 gap-4">
+    <div>
+      <label htmlFor="city"  className="block text-gray-700">City (required)</label>
+      <input name="city" type="text" onChange={(e)=>setCity(e.target.value)} value={city} placeholder="Eg: Jaipur" className="w-full p-2 border border-gray-300 rounded"/>
+      <label htmlFor="pincode" className="block text-gray-700">Pincode (required)</label>
+      <input name="pincode" type="text" onChange={(e)=>setPincode(e.target.value)} value={pincode} placeholder="Eg: Jaipur" className="w-full p-2 border border-gray-300 rounded"/>
+    </div>
+    <div>
+      <label htmlFor="state" className="block text-gray-700">State (required)</label>
+      <input name="state" type="text" onChange={(e)=>setState(e.target.value)} value={state} placeholder="Eg: Rajasthan" className="w-full p-2 border border-gray-300 rounded"/>
+      <label htmlFor="country" className="block text-gray-700">Country/Region(required)</label>
+      <input name="country" type="text" onChange={(e)=>setCountry(e.target.value)} value={country} placeholder="Eg: India" className="w-full p-2 border border-gray-300 rounded"/>
+    </div>
+  </div>
                 </div>
                 <button
                   className="rounded-md text-[#4e7690]"
@@ -293,29 +317,18 @@ const AddLocationPopup = ({ open, setOpen }) => {
                 </button>
               </div>
             )}
-            {position.lat != null &&
-              position.lng !== null &&
-              currPage === 1 && (
+            
+              {currPage === 1 && (
                 <div className="flex-1">
                   <AddLocationMap
-                    position={position}
-                    setPosition={setPosition}
                     style={{ height: "100%", width: "100%" }} //This is going ot main div of the map
-                    city={city}
                     setCity={setCity}
-                    pincode={pincode}
                     setPincode={setPincode}
-                    state={state}
                     setState={setState}
-                    country={country}
                     setCountry={setCountry}
-                    coordinates={coordinates}
                     setCoordinates={setCoordinates}
-                    name={name}
                     setName={setName}
-                    address={address}
                     setAddress={setAddress}
-    
                   />
 
                 </div>

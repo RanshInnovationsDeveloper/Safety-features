@@ -45,67 +45,10 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const items = await axios.get(
-        //   "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        // );
-        const items = [
-          {
-            _id: "6648e4b0736720cd04bb66d1",
-            name: "New N",
-            address: "Chanditara",
-            coordinates: [25.293769766472124, 83.0721803890625],
-            expiration: -1,
-            createdAt: "2024-05-18T17:26:08.602Z",
-            active: "2024-05-18T17:26:08.602Z",
-            __v: 0,
-          },
-          {
-            _id: "6648faf7efa520ca0da44704",
-            name: "Test Place23",
-            address: "456 Elm St",
-            coordinates: [-4.98, -7],
-            expiration: 60,
-            author: "first user",
-            createdAt: "2024-05-18T19:01:11.063Z",
-            active: "2024-05-18T19:01:11.063Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fbe2aa1a75b4a6c6f1c3",
-            name: "",
-            address: "Paris",
-            coordinates: [48.86862129431144, 2.331778390512249],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:05:06.762Z",
-            active: "2024-05-18T19:05:06.762Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fc58aa1a75b4a6c6f1d0",
-            name: "",
-            address: "Paris",
-            coordinates: [48.8532588666427, 2.364336458826699],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:07:04.093Z",
-            active: "2024-05-18T19:07:04.093Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fc8daa1a75b4a6c6f1d8",
-            name: "",
-            address: "Paris",
-            coordinates: [48.84845820069552, 2.3360123316294334],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:07:57.464Z",
-            active: "2024-05-18T19:07:57.464Z",
-            __v: 0,
-          },
-        ];
-        // setData(items?.data);
-        setData(items);
+        const items = await axios.get(
+          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
+        );
+        setData(items?.data);
         setIsLoading(false);
       } catch (error) {
         toast.error(error.message);
@@ -135,21 +78,27 @@ function AdminDashboard() {
       setIsLoading(false);
     }
   }, [data]);
-  console.log("processedData",processedData)
 
   //This one is to query
-  useEffect(() => {
-    if (query === "") {
-        setQueryedData(processedData);
-        return; 
-    }
-    const filteredData = processedData?.filter(
-      (item) =>
-        item?.name?.toLowerCase().includes(query?.toLowerCase()) ||
-        item?.address?.toLowerCase().includes(query?.toLowerCase())
-    );
-    setQueryedData(filteredData);
-  }, [data, query]);
+//This one is to query
+useEffect(() => {
+  let trimmedQuery = query.trim();
+
+  if (trimmedQuery === "") {
+    setQueryedData(processedData);
+    return; 
+  }
+
+  const filteredData = processedData?.filter(
+    (item) =>
+      item?.name?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+      item?.address?.toLowerCase().includes(trimmedQuery.toLowerCase())
+  );
+
+  setQueryedData(filteredData);
+}, [processedData, query]); // Changed from [data, query] to [processedData, query]
+  
+
   console.log("Queryed Data", queryedData);
 
   //Data to style
@@ -206,9 +155,6 @@ function AdminDashboard() {
         </p>
       </div>
             </> : <>
-            
-           
-
             <div class="border rounded-lg divide-y divide-gray-200 px-4 ">
               <div class="py-3 px-4 flex flex-row items-center justify-between ">
                 <div className="border border-gray-200 shadow-sm rounded-lg text-[#71839B] text-sm font-medium flex flex-row justify-center items-center">
@@ -365,7 +311,7 @@ function AdminDashboard() {
                           {row?.name}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
-                          {row?.address}
+                          {row?.address.split("++")[1]}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                           {row?.distance}
@@ -390,10 +336,7 @@ function AdminDashboard() {
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                           {row?.timeLeft}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                          {row?.distance}
-                          {console.log(row?.distance)}
-                        </td>
+                       
                         <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
                           <button
                             type="button"

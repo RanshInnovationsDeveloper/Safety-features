@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
   
   // let dest
   // let center = { lat: 29.6857, lng: 76.9905 }
-  function AddLocationMap({style,city,setCity,pincode,setPincode,state,setState,country,setCountry,coordinates,setCoordinates,name,setName,address,setAddress}) {
+  function AddLocationMap({style,setCity,setPincode,setState,setCountry,setCoordinates,setName,setAddress}) {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
         libraries: ['places'],
@@ -49,7 +49,7 @@ import { toast } from 'react-toastify';
     useEffect(() => {
       getPlaces();
       // comment this after login and signup is made
-      localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYxMzYwMjM2MmFiYmE3YWY4ZTA1OTNmIn0sImlhdCI6MTcxMjU0NTgyN30.wkRD4c2f2BLt58YG74XycTGIYS5nR6c777pRW9K8g3g");
+    //   localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYxMzYwMjM2MmFiYmE3YWY4ZTA1OTNmIn0sImlhdCI6MTcxMjU0NTgyN30.wkRD4c2f2BLt58YG74XycTGIYS5nR6c777pRW9K8g3g");
       getCoordinates();
     }, []);
   
@@ -77,14 +77,14 @@ import { toast } from 'react-toastify';
     
         // Proceed only if the distance is within the maximum allowed radius
         if (distance <= maxDistance) {
-            console.log({
-                lat: clickedLat,
-                lng: clickedLng,
-            });
             setMarking({
                 lat: clickedLat,
                 lng: clickedLng,
             });
+            const clickedLoc={lat:clickedLat,lng:clickedLng}
+            console.log(clickedLoc)
+            setCoordinates(clickedLoc);
+
             try {
                 const response = await axios.get(
                     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${clickedLat},${clickedLng}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
@@ -98,12 +98,35 @@ import { toast } from 'react-toastify';
                 const stateComponent=place.find((component) =>
                     component.types.includes("administrative_area_level_1")
                     );
+
+                const pincodeComponent = place.find((component) =>
+                        component.types.includes("postal_code")
+                      );
+
+                const countryComponent = place.find((component) =>
+                        component.types.includes("country")
+                      );
+
+                const addressComponent = place.find((component) =>
+                        component.types.includes("street_address")
+                      );
+
+                      const placeNameComponent = place.find((component) =>
+                        component.types.includes("establishment")
+                      );
               //   console.log(cityComponent.long_name)
                 setCity(cityComponent.long_name);
                 setState(stateComponent.long_name);
-                console.log(state)
+                setPincode(pincodeComponent.long_name);
+                setCountry(countryComponent.long_name);
+                setName(placeNameComponent.long_name);
+                console.log(clickedLoc)
+                if (addressComponent) {
+                    setAddress(addressComponent.long_name);
+                  } else {
+                    toast.error('Street address not found');
+                }
                 // setAddress(cityComponent.long_name);
-                setCoordinates(`${clickedLat}, ${clickedLng}`);
 
             } catch (error) {
                 console.error('Error fetching place name:', error);
