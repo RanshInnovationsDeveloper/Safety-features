@@ -6,7 +6,7 @@ function calculateExpiration(expiration, createdAt) {
 
   // Convert expiration to milliseconds and add it to the creation date
   const expirationDate =
-    new Date(createdAt).getTime() + (expiration * 1000) / 60;
+    new Date(createdAt).getTime() + expiration * 60 * 1000;
 
   // Calculate the difference between the expiration date and the current date
   const diff = expirationDate - new Date().getTime();

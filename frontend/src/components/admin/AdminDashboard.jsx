@@ -40,10 +40,67 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const items = await axios.get(
-          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        );
-        setData(items?.data);
+        // const items = await axios.get(
+        //   "https://safety-features.onrender.com/api/place/fetchAllPlaces"
+        // );
+        const items = [
+          {
+            _id: "6648e4b0736720cd04bb66d1",
+            name: "New N",
+            address: "Chanditara",
+            coordinates: [25.293769766472124, 83.0721803890625],
+            expiration: -1,
+            createdAt: "2024-05-18T17:26:08.602Z",
+            active: "2024-05-18T17:26:08.602Z",
+            __v: 0,
+          },
+          {
+            _id: "6648faf7efa520ca0da44704",
+            name: "Test Place23",
+            address: "456 Elm St",
+            coordinates: [-4.98, -7],
+            expiration: 60,
+            author: "first user",
+            createdAt: "2024-05-18T19:01:11.063Z",
+            active: "2024-05-18T19:01:11.063Z",
+            __v: 0,
+          },
+          {
+            _id: "6648fbe2aa1a75b4a6c6f1c3",
+            name: "",
+            address: "Paris",
+            coordinates: [48.86862129431144, 2.331778390512249],
+            expiration: -1,
+            author: "jnnjjbanklandskdsjljasndlajb",
+            createdAt: "2024-05-18T19:05:06.762Z",
+            active: "2024-05-18T19:05:06.762Z",
+            __v: 0,
+          },
+          {
+            _id: "6648fc58aa1a75b4a6c6f1d0",
+            name: "",
+            address: "Paris",
+            coordinates: [48.8532588666427, 2.364336458826699],
+            expiration: -1,
+            author: "jnnjjbanklandskdsjljasndlajb",
+            createdAt: "2024-05-18T19:07:04.093Z",
+            active: "2024-05-18T19:07:04.093Z",
+            __v: 0,
+          },
+          {
+            _id: "6648fc8daa1a75b4a6c6f1d8",
+            name: "",
+            address: "Paris",
+            coordinates: [48.84845820069552, 2.3360123316294334],
+            expiration: -1,
+            author: "jnnjjbanklandskdsjljasndlajb",
+            createdAt: "2024-05-18T19:07:57.464Z",
+            active: "2024-05-18T19:07:57.464Z",
+            __v: 0,
+          },
+        ];
+        // setData(items?.data);
+        setData(items);
         setIsLoading(false);
       } catch (error) {
         toast.error(error.message);
@@ -51,12 +108,12 @@ function AdminDashboard() {
     };
     fetchData();
   }, []);
-  console.log(data?.[6]?.expiration);
-  console.log(data?.[0]?.createdAt);
+
+  console.log("Data", data);
   //This one calculates the time left and distance of the location and also filter out expired data'
   useEffect(() => {
     if (data) {
-      const newData = data.map((item) => {
+      const newData = data?.map((item) => {
         const timeLeft = calculateExpiration(item.expiration, item.createdAt);
         const distance = calculateDistance(
           item?.coordinates[0],
@@ -67,7 +124,7 @@ function AdminDashboard() {
       });
       const filteredData = newData.filter(
         (item) =>
-          item?.timeLeft !== "Expired" && item?.active !== item?.createdAt
+          item?.timeLeft !== "Expired" && item?.active === item?.createdAt
       );
       setProcessedData(filteredData);
       setIsLoading(false);
@@ -76,14 +133,18 @@ function AdminDashboard() {
 
   //This one is to query
   useEffect(() => {
-    if (query === "") setQueryedData(processedData);
-    const filteredData = processedData.filter(
+    if (query === "") {
+        setQueryedData(processedData);
+        return; 
+    }
+    const filteredData = processedData?.filter(
       (item) =>
-        item?.name.toLowerCase().includes(query.toLowerCase()) ||
-        item?.address.toLowerCase().includes(query.toLowerCase())
+        item?.name?.toLowerCase().includes(query?.toLowerCase()) ||
+        item?.address?.toLowerCase().includes(query?.toLowerCase())
     );
     setQueryedData(filteredData);
   }, [data, query]);
+  console.log("Queryed Data", queryedData);
 
   //Data to style
   const [currentPage, setCurrentPage] = useState(1);
@@ -117,10 +178,8 @@ function AdminDashboard() {
   }
   return (
     <>
-      {console.log(data)}
       {console.log("Processses", processedData)}
       <div class="flex flex-col">
-        {console.log(processedData)}
         <div class="-m-1.5 overflow-x-auto">
           <div class=" min-w-full inline-block align-middle">
             <div className="flex flex-row justify-between items-center px-2 py-3">
@@ -268,62 +327,63 @@ function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 ">
-                    {currentRows?.map((row, index) => (
-                      <tr key={index}>
-                        <td class="py-3 ps-4">
-                          <div class="flex items-center h-5">
-                            <input
-                              id="hs-table-pagination-checkbox-1"
-                              type="checkbox"
-                              class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                            />
-                            <label
-                              for="hs-table-pagination-checkbox-1"
-                              class="sr-only"
+                    {currentRows &&
+                      currentRows?.map((row, index) => (
+                        <tr key={index}>
+                          <td class="py-3 ps-4">
+                            <div class="flex items-center h-5">
+                              <input
+                                id="hs-table-pagination-checkbox-1"
+                                type="checkbox"
+                                class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                              />
+                              <label
+                                for="hs-table-pagination-checkbox-1"
+                                class="sr-only"
+                              >
+                                Checkbox
+                              </label>
+                            </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#101828] ">
+                            {row?.name}
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
+                            {row?.address}
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                            {row?.distance}
+                            {console.log(row?.distance)}
+                          </td>
+                          <td
+                            class={`px-4 py-3 whitespace-nowrap text-sm  text-gray-800 `}
+                          >
+                            <h1
+                              className={`w-fit flex flex-row gap-1 justify-center items-center rounded-[50px] py-1 px-3 ${
+                                row?.expiration === -1
+                                  ? "text-[#037847]  bg-[#ECFDF3]"
+                                  : "text-[#364254] bg-[#F2F4F7]"
+                              }`}
                             >
-                              Checkbox
-                            </label>
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#101828] ">
-                          {row?.name}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
-                          {row?.address}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                          {row?.distance}
-                          {console.log(row?.distance)}
-                        </td>
-                        <td
-                          class={`px-4 py-3 whitespace-nowrap text-sm  text-gray-800 `}
-                        >
-                          <h1
-                            className={`w-fit flex flex-row gap-1 justify-center items-center rounded-[50px] py-1 px-3 ${
-                              row?.expiration === -3600
-                                ? "text-[#037847]  bg-[#ECFDF3]"
-                                : "text-[#364254] bg-[#F2F4F7]"
-                            }`}
-                          >
-                            <GoDotFill className="  rounded-full" />
-                            {row?.expiration === -3600
-                              ? "Permanent"
-                              : "Temporary"}
-                          </h1>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                          {calculateExpiration(row?.expiration, row?.createdAt)}
-                        </td>
-                        <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
-                          <button
-                            type="button"
-                            class="inline-flex items-center  text-sm font-semibold rounded-lg border "
-                          >
-                            <FaRegEdit className=" w-4 h-4 text-[#4E7690]" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                              <GoDotFill className="  rounded-full" />
+                              {row?.expiration === -1
+                                ? "Permanent"
+                                : "Temporary"}
+                            </h1>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                            {row?.timeLeft}
+                          </td>
+                          <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
+                            <button
+                              type="button"
+                              class="inline-flex items-center  text-sm font-semibold rounded-lg border "
+                            >
+                              <FaRegEdit className=" w-4 h-4 text-[#4E7690]" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

@@ -145,8 +145,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import Add from "../Add";
-
+import AddLocationMap from "./AddLocationMap";
 const AddLocationPopup = ({ open, setOpen }) => {
   const [position, setPosition] = useState({ lat: null, lng: null });
   const [nestedOpen, setNestedOpen] = useState(false);
@@ -156,10 +155,15 @@ const AddLocationPopup = ({ open, setOpen }) => {
     temporary: false,
     permanent: false,
   });
+  const [coordinates, setCoordinates] = useState('');
   const [name, setName] = useState();
   const [hours, setHours] = useState(0);
   const [days, setDays] = useState(0);
   const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -255,6 +259,31 @@ const AddLocationPopup = ({ open, setOpen }) => {
                   <p className="text-[#4e7690]">
                     Note:Fields are editable and can be changed
                   </p>
+                  <div>
+                  <label for="placename">Place Name (required)</label>
+                  <input name="placename" type="text" value={name} placeholder="Eg: Jaipur"/>
+                  <label for="category">Category (required)</label>
+                  <select name="category">
+                    <options value="police-station">Police Station</options>
+                    <options value="hospital">Hospital</options>
+                  </select>
+                  </div>
+                  <label for="address">Address(required)</label>
+                  <input name="address" type="text" value={address} />
+                  <div>
+                    <div>
+                      <label for="city">City (required)</label>
+                      <input name="city" type="text" value={city} placeholder="Eg: Jaipur"/>
+                      <label for="pincode">Pincode (required)</label>
+                      <input name="pincode" type="text" value={pincode} placeholder="Eg: Jaipur"/>
+                    </div>
+                    <div>
+                      <label for="state">State (required)</label>
+                      <input name="state" type="text" value={state} placeholder="Eg: Rajasthan"/>
+                      <label for="country">Country/Region(required)</label>
+                      <input name="country" type="text" value={country} placeholder="Eg: India"/>
+                    </div>
+                  </div>
                 </div>
                 <button
                   className="rounded-md text-[#4e7690]"
@@ -268,14 +297,29 @@ const AddLocationPopup = ({ open, setOpen }) => {
               position.lng !== null &&
               currPage === 1 && (
                 <div className="flex-1">
-                  <Add
+                  <AddLocationMap
                     position={position}
                     setPosition={setPosition}
-                    style={{ height: "50vh" }}
+                    style={{ height: "100%", width: "100%" }} //This is going ot main div of the map
                     city={city}
                     setCity={setCity}
+                    pincode={pincode}
+                    setPincode={setPincode}
+                    state={state}
+                    setState={setState}
+                    country={country}
+                    setCountry={setCountry}
+                    coordinates={coordinates}
+                    setCoordinates={setCoordinates}
+                    name={name}
+                    setName={setName}
+                    address={address}
+                    setAddress={setAddress}
+    
                   />
+
                 </div>
+
               )}
 
             {currPage === 2 && (
@@ -353,18 +397,6 @@ const AddLocationPopup = ({ open, setOpen }) => {
                             value={hours}
                             onChange={(e) => setHours(e.target.value)}
                             disabled={options?.permanent}
-                          />
-                        </div>
-                        <div className="w-full">
-                          <label htmlFor="name">Name</label>
-                          <input
-                            type="string"
-                            id="name"
-                            name="name"
-                            className="border p-2 rounded"
-                            placeholder="Police Station"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
                           />
                         </div>
                       </div>
