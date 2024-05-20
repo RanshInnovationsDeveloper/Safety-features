@@ -11,6 +11,7 @@ import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
+import { useLocation } from "react-router-dom";
 
 function AdminDashboard() {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -20,6 +21,10 @@ function AdminDashboard() {
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
+
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 
   //TODO:This function can be added to context and this data can be fetched straight form ocntext then
   useEffect(() => {
@@ -130,6 +135,7 @@ function AdminDashboard() {
       setIsLoading(false);
     }
   }, [data]);
+  console.log("processedData",processedData)
 
   //This one is to query
   useEffect(() => {
@@ -166,16 +172,6 @@ function AdminDashboard() {
     return <h1> Loading...</h1>;
   }
 
-  if (!isLoading && processedData?.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
-        <p className="text-[#4E7690] mb-14 font-normal text-md">
-          Add some data to see it here
-        </p>
-      </div>
-    );
-  }
   return (
     <>
       {console.log("Processses", processedData)}
@@ -202,6 +198,16 @@ function AdminDashboard() {
               </div>
               <AddLocationPopup open={open} setOpen={setOpen} />
             </div>
+            {(!isLoading && processedData?.length === 0) ? <>
+              <div className="flex flex-col justify-center items-center h-[60vh]">
+        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
+        <p className="text-[#4E7690] mb-14 font-normal text-md">
+          Add some data to see it here
+        </p>
+      </div>
+            </> : <>
+            
+           
 
             <div class="border rounded-lg divide-y divide-gray-200 px-4 ">
               <div class="py-3 px-4 flex flex-row items-center justify-between ">
@@ -318,6 +324,17 @@ function AdminDashboard() {
                           <img src="/arrow-down.svg" alt="arrow" />
                         </div>
                       </th>
+                      {linkstart === '/superadmin' && 
+                        <th
+                        scope="col"
+                        class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
+                      >
+                        <div className="flex gap-2">
+                          Access
+                          <img src="/arrow-down.svg" alt="arrow" />
+                        </div>
+                      </th>}
+
                       <th
                         scope="col"
                         class="px-4 py-3 text-center text-xs font-medium text-[#4E7690] bg-[#DCE4E9]  "
@@ -327,63 +344,66 @@ function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 ">
-                    {currentRows &&
-                      currentRows?.map((row, index) => (
-                        <tr key={index}>
-                          <td class="py-3 ps-4">
-                            <div class="flex items-center h-5">
-                              <input
-                                id="hs-table-pagination-checkbox-1"
-                                type="checkbox"
-                                class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                              />
-                              <label
-                                for="hs-table-pagination-checkbox-1"
-                                class="sr-only"
-                              >
-                                Checkbox
-                              </label>
-                            </div>
-                          </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#101828] ">
-                            {row?.name}
-                          </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
-                            {row?.address}
-                          </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                            {row?.distance}
-                            {console.log(row?.distance)}
-                          </td>
-                          <td
-                            class={`px-4 py-3 whitespace-nowrap text-sm  text-gray-800 `}
+                    {currentRows?.map((row, index) => (
+                      <tr key={index}>
+                        <td class="py-3 ps-4">
+                          <div class="flex items-center h-5">
+                            <input
+                              id="hs-table-pagination-checkbox-1"
+                              type="checkbox"
+                              class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                            />
+                            <label
+                              for="hs-table-pagination-checkbox-1"
+                              class="sr-only"
+                            >
+                              Checkbox
+                            </label>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#101828] ">
+                          {row?.name}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
+                          {row?.address}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                          {row?.distance}
+                          {console.log(row?.distance)}
+                        </td>
+                        <td
+                          class={`px-4 py-3 whitespace-nowrap text-sm  text-gray-800 `}
+                        >
+                          <h1
+                            className={`w-fit flex flex-row gap-1 justify-center items-center rounded-[50px] py-1 px-3 ${
+                              row?.expiration === -1
+                                ? "text-[#037847]  bg-[#ECFDF3]"
+                                : "text-[#364254] bg-[#F2F4F7]"
+                            }`}
                           >
-                            <h1
-                              className={`w-fit flex flex-row gap-1 justify-center items-center rounded-[50px] py-1 px-3 ${
-                                row?.expiration === -1
-                                  ? "text-[#037847]  bg-[#ECFDF3]"
-                                  : "text-[#364254] bg-[#F2F4F7]"
-                              }`}
-                            >
-                              <GoDotFill className="  rounded-full" />
-                              {row?.expiration === -1
-                                ? "Permanent"
-                                : "Temporary"}
-                            </h1>
-                          </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                            {row?.timeLeft}
-                          </td>
-                          <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
-                            <button
-                              type="button"
-                              class="inline-flex items-center  text-sm font-semibold rounded-lg border "
-                            >
-                              <FaRegEdit className=" w-4 h-4 text-[#4E7690]" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                            <GoDotFill className="  rounded-full" />
+                            {row?.expiration === -1
+                              ? "Permanent"
+                              : "Temporary"}
+                          </h1>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                          {row?.timeLeft}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                          {row?.distance}
+                          {console.log(row?.distance)}
+                        </td>
+                        <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
+                          <button
+                            type="button"
+                            class="inline-flex items-center  text-sm font-semibold rounded-lg border "
+                          >
+                            <FaRegEdit className=" w-4 h-4 text-[#4E7690]" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -415,6 +435,7 @@ function AdminDashboard() {
                 </nav>
               </div>
             </div>
+            </>}
           </div>
         </div>
       </div>

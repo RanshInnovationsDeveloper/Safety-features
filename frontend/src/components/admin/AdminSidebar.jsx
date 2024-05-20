@@ -1,19 +1,10 @@
-// import police from "../../images/police.png";
-// import emblem from "../../images/emblem.png";
-// import bhajan_lal from "../../images/bhajan_lal.webp";
 import { MdOutlineDashboard } from "react-icons/md";
-// import { IoLocationSharp } from "react-icons/io5";
-// import { SiOpenaccess } from "react-icons/si";
-// import { CiEdit } from "react-icons/ci";
-// import { MdDeleteOutline } from "react-icons/md";
-// import { MdOutlineAddLocationAlt } from "react-icons/md";
-
 import React, { useState } from "react";
 import { FiShoppingBag } from "react-icons/fi";
 import { GrWorkshop } from "react-icons/gr";
 import { RxDashboard } from "react-icons/rx";
 import { FaLayerGroup } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineUserGroup, HiOutlineViewGridAdd } from "react-icons/hi";
 import { BsHandbag } from "react-icons/bs";
 import { MdOutlineLocalOffer } from "react-icons/md";
@@ -27,7 +18,12 @@ import AddLocationPopup from "./AddLocationPopup";
 
 const AdminSideBar = ({ active }) => {
 
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+
   const [open, setOpen] = useState(false);
+  console.log(linkstart)
 
   const toggleOpen  = () => {
     setOpen(!open);
@@ -62,7 +58,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
       <div className="flex flex-col">
         <h1 className="text-[14px] text-[#4E7690] font-medium py-2 px-6">Menu</h1>
       <div className="w-full flex items-center p-4">
-        <Link to="/admin-dashboard" className="w-full  px-2 flex items-center">
+        <Link to={`${linkstart}-dashboard`} className="w-full  px-2 flex items-center">
           < MdDashboard
             size={20}
             color={`#4E7690`}
@@ -84,7 +80,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/admin-location" className="w-full   px-2 flex items-center">
+        <Link to={`${linkstart}-location`} className="w-full   px-2 flex items-center">
         <MdLocationOn
             size={20}
             color={`#4E7690`}
@@ -103,9 +99,8 @@ Hon’ble Chief Minister of Rajasthan</h1>
           </h5>
         </Link>
       </div>
-
-      <div className="w-full flex items-center p-4">
-        <Link to="/admin-access" className="w-full   px-2 flex items-center">
+      {linkstart === '/superadmin' &&       <div className="w-full flex items-center p-4">
+        <Link to="/superadmin-access" className="w-full   px-2 flex items-center">
           <img
           src = "/Vector.svg"
           alt="access"
@@ -125,10 +120,11 @@ Hon’ble Chief Minister of Rajasthan</h1>
             Access
           </h5>
         </Link>
-      </div>
+      </div>}
+
 
       <div className="w-full flex items-center p-4">
-        <Link to="/admin-edit-history" className="w-full  flex items-center  px-2">
+        <Link to={`${linkstart}-edit-history`} className="w-full  flex items-center  px-2">
           <AiOutlineEdit
             size={20}
             color={`#71829B`}
@@ -150,7 +146,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
 
       <div className="w-full flex items-center p-4">
         <Link
-          to="/admin-archive"
+          to={`${linkstart}-archive`}
           className="w-full flex items-center   px-2"
         >
           <IoArchive
@@ -174,7 +170,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
 
       <div className="w-full flex items-center px-4  ">
         <Link
-          to="/admin-delete-location"
+          to={`${linkstart}-delete-location`}
           className={`w-fit py-3 px-2 rounded-xl flex items-center ${active === 6 ? "bg-[#F44336]": "bg-[#FDEBEA] "} `} 
         >
           <AiOutlineDelete

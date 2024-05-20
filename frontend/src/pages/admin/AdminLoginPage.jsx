@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,9 +7,12 @@ export default function AdminLoginPage() {
   const [credentials, setCredentials] = useState({ userid: "", password: "" });
   let navigate = useNavigate();
 
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      navigate("/admin-dashboard");
+      navigate(`${linkstart}-dashboard`);
     }
   }, []);
 
