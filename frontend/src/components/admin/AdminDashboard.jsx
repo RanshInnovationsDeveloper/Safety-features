@@ -11,6 +11,7 @@ import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
+import { useLocation } from "react-router-dom";
 
 function AdminDashboard() {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -20,6 +21,10 @@ function AdminDashboard() {
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
+
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 
   //TODO:This function can be added to context and this data can be fetched straight form ocntext then
   useEffect(() => {
@@ -105,16 +110,6 @@ function AdminDashboard() {
     return <h1> Loading...</h1>;
   }
 
-  if (!isLoading && processedData?.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
-        <p className="text-[#4E7690] mb-14 font-normal text-md">
-          Add some data to see it here
-        </p>
-      </div>
-    );
-  }
   return (
     <>
       {console.log(data)}
@@ -143,6 +138,16 @@ function AdminDashboard() {
               </div>
               <AddLocationPopup open={open} setOpen={setOpen} />
             </div>
+            {(!isLoading && processedData?.length === 0) ? <>
+              <div className="flex flex-col justify-center items-center h-[60vh]">
+        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
+        <p className="text-[#4E7690] mb-14 font-normal text-md">
+          Add some data to see it here
+        </p>
+      </div>
+            </> : <>
+            
+           
 
             <div class="border rounded-lg divide-y divide-gray-200 px-4 ">
               <div class="py-3 px-4 flex flex-row items-center justify-between ">
@@ -259,6 +264,17 @@ function AdminDashboard() {
                           <img src="/arrow-down.svg" alt="arrow" />
                         </div>
                       </th>
+                      {linkstart === '/superadmin' && 
+                        <th
+                        scope="col"
+                        class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
+                      >
+                        <div className="flex gap-2">
+                          Access
+                          <img src="/arrow-down.svg" alt="arrow" />
+                        </div>
+                      </th>}
+
                       <th
                         scope="col"
                         class="px-4 py-3 text-center text-xs font-medium text-[#4E7690] bg-[#DCE4E9]  "
@@ -269,7 +285,9 @@ function AdminDashboard() {
                   </thead>
                   <tbody class="divide-y divide-gray-200 ">
                     {currentRows?.map((row, index) => (
+                     
                       <tr key={index}>
+                        {console.log(row)}
                         <td class="py-3 ps-4">
                           <div class="flex items-center h-5">
                             <input
@@ -314,6 +332,10 @@ function AdminDashboard() {
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                           {calculateExpiration(row?.expiration, row?.createdAt)}
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                          {row?.distance}
+                          {console.log(row?.distance)}
+                        </td>
                         <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
                           <button
                             type="button"
@@ -355,6 +377,7 @@ function AdminDashboard() {
                 </nav>
               </div>
             </div>
+            </>}
           </div>
         </div>
       </div>

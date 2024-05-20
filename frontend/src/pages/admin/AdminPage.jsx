@@ -2,16 +2,19 @@
 import AdminNavbar from "../../components/admin/AdminNavbar"
 import AdminSidebar from "../../components/admin/AdminSidebar"
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminDashboard from '../../components/admin/AdminDashboard';
 
 const Admin=()=>{
  const navigate = useNavigate();
+ const location = useLocation();
 
+ const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+console.log(linkstart)
     useEffect(  ()=>{
 
         if(!localStorage.getItem('token')){
-            navigate("/admin/login")
+            navigate(`${linkstart}/login`)
           } 
 
       },[localStorage.getItem('token')]);

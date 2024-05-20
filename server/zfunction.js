@@ -1,7 +1,7 @@
 // function dtermine place kab dali
 // permanent createdAt =-1 and else expiration time is some positive number
 // when you are using map for places
-{calculateSecondsSinceCreation(place.createdAt)} seconds ago
+{calculateSecondsSinceCreation(place.createdAt)} 
 
 const calculateSecondsSinceCreation = (createdAt) => {
     const now = new Date();
