@@ -44,60 +44,105 @@ function AdminArchive() {
         //   "https://safety-features.onrender.com/api/place/fetchAllPlaces"
         // );
         const items = [
-          {
-            _id: "6648e4b0736720cd04bb66d1",
-            name: "New N",
-            address: "Chanditara",
-            coordinates: [25.293769766472124, 83.0721803890625],
-            expiration: -1,
-            createdAt: "2024-05-18T17:26:08.602Z",
-            active: "2024-05-18T17:26:08.602Z",
-            __v: 0,
-          },
-          {
-            _id: "6648faf7efa520ca0da44704",
-            name: "Test Place23",
-            address: "456 Elm St",
-            coordinates: [-4.98, -7],
-            expiration: 60,
-            author: "first user",
-            createdAt: "2024-05-18T19:01:11.063Z",
-            active: "2024-05-18T19:01:11.063Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fbe2aa1a75b4a6c6f1c3",
-            name: "",
-            address: "Paris",
-            coordinates: [48.86862129431144, 2.331778390512249],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:05:06.762Z",
-            active: "2024-05-18T19:05:06.762Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fc58aa1a75b4a6c6f1d0",
-            name: "",
-            address: "Paris",
-            coordinates: [48.8532588666427, 2.364336458826699],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:07:04.093Z",
-            active: "2024-05-18T19:07:04.093Z",
-            __v: 0,
-          },
-          {
-            _id: "6648fc8daa1a75b4a6c6f1d8",
-            name: "",
-            address: "Paris",
-            coordinates: [48.84845820069552, 2.3360123316294334],
-            expiration: -1,
-            author: "jnnjjbanklandskdsjljasndlajb",
-            createdAt: "2024-05-18T19:07:57.464Z",
-            active: "2024-05-18T19:07:57.464Z",
-            __v: 0,
-          },
+          
+            {
+                "_id": "6648e4b0736720cd04bb66d1",
+                "name": "New N",
+                "address": "Chanditara",
+                "coordinates": [
+                    25.293769766472124,
+                    83.0721803890625
+                ],
+                "expiration": -1,
+                "createdAt": "2024-05-18T17:26:08.602Z",
+                "active": "2024-05-18T17:26:08.602Z",
+                "__v": 0
+            },
+            {
+                "_id": "6648faf7efa520ca0da44704",
+                "name": "Test Place23",
+                "address": "456 Elm St",
+                "coordinates": [
+                    -4.98,
+                    -7
+                ],
+                "expiration": 60,
+                "author": "first user",
+                "createdAt": "2024-05-18T19:01:11.063Z",
+                "active": "2024-05-18T19:01:11.063Z",
+                "__v": 0
+            },
+            {
+                "_id": "6648fbe2aa1a75b4a6c6f1c3",
+                "name": "",
+                "address": "Paris",
+                "coordinates": [
+                    48.86862129431144,
+                    2.331778390512249
+                ],
+                "expiration": -1,
+                "author": "jnnjjbanklandskdsjljasndlajb",
+                "createdAt": "2024-05-18T19:05:06.762Z",
+                "active": "2024-05-18T19:05:06.762Z",
+                "__v": 0
+            },
+            {
+                "_id": "6648fc58aa1a75b4a6c6f1d0",
+                "name": "",
+                "address": "Paris",
+                "coordinates": [
+                    48.8532588666427,
+                    2.364336458826699
+                ],
+                "expiration": -1,
+                "author": "jnnjjbanklandskdsjljasndlajb",
+                "createdAt": "2024-05-18T19:07:04.093Z",
+                "active": "2024-05-18T19:07:04.093Z",
+                "__v": 0
+            },
+            {
+                "_id": "6648fc8daa1a75b4a6c6f1d8",
+                "name": "",
+                "address": "Paris",
+                "coordinates": [
+                    48.84845820069552,
+                    2.3360123316294334
+                ],
+                "expiration": -1,
+                "author": "jnnjjbanklandskdsjljasndlajb",
+                "createdAt": "2024-05-18T19:07:57.464Z",
+                "active": "2024-05-18T19:07:57.464Z",
+                "__v": 0
+            },
+            {
+                "_id": "664b296d0bfa7320f4ac2470",
+                "name": "Mansa Devi Mandir",
+                "address": "Chechpokli++Karnal++Haryana++132001++India",
+                "coordinates": [
+                    29.68589573517149,
+                    76.98758175659182
+                ],
+                "expiration": 60,
+                "author": " ",
+                "createdAt": "2024-05-20T10:43:57.409Z",
+                "active": "2024-05-20T10:43:57.409Z",
+                "__v": 0
+            },
+            {
+                "_id": "664b2ad447da9550d763b4ec",
+                "name": "Policio",
+                "address": "Parisanr tttt++Paris++Île-de-France++75001++France",
+                "coordinates": [
+                    48.85773648501677,
+                    2.346835581970197
+                ],
+                "expiration": -1,
+                "author": "admin",
+                "createdAt": "2024-05-20T10:49:56.022Z",
+                "active": "2024-05-20T10:49:56.022Z",
+                "__v": 0
+            }
+        
         ];
         // setData(items?.data);
         setData(items);
@@ -133,14 +178,21 @@ function AdminArchive() {
 
   //This one is to query
   useEffect(() => {
-    if (query === "") setQueryedData(processedData);
+    let trimmedQuery = query.trim();
+  
+    if (trimmedQuery === "") {
+      setQueryedData(processedData);
+      return; 
+    }
+  
     const filteredData = processedData?.filter(
       (item) =>
-        item?.name?.toLowerCase().includes(query?.toLowerCase()) ||
-        item?.address?.toLowerCase().includes(query?.toLowerCase())
+        item?.name?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+        item?.address?.toLowerCase().includes(trimmedQuery.toLowerCase())
     );
+  
     setQueryedData(filteredData);
-  }, [data, query]);
+  }, [processedData, query]); 
 
   console.log("Queryed Data", queryedData);
 
@@ -284,15 +336,7 @@ function AdminArchive() {
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
-                          City
-                          <img src="/arrow-down.svg" alt="arrow" />
-                        </div>
-                      </th>
-                      <th
-                        scope="col"
-                        class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
-                      >
+                      
                         <div className="flex gap-2">
                           City
                           <img src="/arrow-down.svg" alt="arrow" />
@@ -356,7 +400,7 @@ function AdminArchive() {
                             {row?.name}
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
-                            {row?.address}
+                            {row?.address.split("++")[1]}
                           </td>
                           <td
                             class={`px-4 py-3 whitespace-nowrap text-sm  text-gray-800 `}
@@ -373,6 +417,28 @@ function AdminArchive() {
                                 ? "Permanent"
                                 : "Temporary"}
                             </h1>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
+                            {(() => {
+                              const date = new Date(row?.createdAt);
+                              const formattedDate = date.toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                }
+                              );
+                              const formattedTime = date.toLocaleTimeString(
+                                "it-IT",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                }
+                              );
+                              return `${formattedDate} ${formattedTime}`;
+                            })()}
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                             {(() => {

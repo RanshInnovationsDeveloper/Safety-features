@@ -3,7 +3,8 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { FaPlus } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import { FaArrowDown } from "react-icons/fa6";
+import { FaArrowDown,FaArrowUp } from "react-icons/fa6";
+import {BsDash} from "react-icons/bs"
 import axios from "axios";
 import { toast } from "react-toastify";
 import AddLocationPopup from "./AddLocationPopup";
@@ -21,6 +22,7 @@ function AdminDashboard() {
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
+  const [sortedOrder,setSortedOrder] = useState("asc-name");
 
   const location = useLocation();
 
@@ -79,13 +81,55 @@ function AdminDashboard() {
     }
   }, [data]);
 
-  //This one is to query
+
+ 
 //This one is to query
 useEffect(() => {
+  // function to sort
+  function sortData(dataArray){
+    let sortedData=[];
+    if(sortedOrder==="asc-name"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.name?.localeCompare(b.name));
+    }
+    if(sortedOrder==="desc-name"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.name?.localeCompare(a.name));
+    }
+    if(sortedOrder==="asc-city"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.address?.split("++")[1]?.localeCompare(b.address.split("++")[1]));
+    }
+    if(sortedOrder==="desc-city"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.address?.split("++")[1]?.localeCompare(a.address.split("++")[1]));
+    }
+    if(sortedOrder==="asc-distance"){
+      sortedData= [...dataArray]?.sort((a,b)=>parseFloat(a.distance) - parseFloat(b.distance));
+    }
+    if(sortedOrder==="desc-distance"){
+      sortedData= [...dataArray]?.sort((a,b)=>parseFloat(b.distance) - parseFloat(a.distance));
+    }
+    if(sortedOrder==="asc-status"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.expiration-b.expiration);
+    }
+    if(sortedOrder==="desc-status"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.expiration-a.expiration);
+    }
+    if(sortedOrder==="asc-time"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.timeLeft-b.timeLeft);
+    }
+    if(sortedOrder==="desc-time"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.timeLeft-a.timeLeft);
+    }
+    return sortedData;
+  }
+
+  console.log(sortedOrder)
+
+ 
+ 
   let trimmedQuery = query.trim();
 
   if (trimmedQuery === "") {
-    setQueryedData(processedData);
+    const sortedData = sortData(processedData);
+    setQueryedData(sortedData)
     return; 
   }
 
@@ -94,9 +138,9 @@ useEffect(() => {
       item?.name?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
       item?.address?.toLowerCase().includes(trimmedQuery.toLowerCase())
   );
-
-  setQueryedData(filteredData);
-}, [processedData, query]); // Changed from [data, query] to [processedData, query]
+  const sortedData = sortData(filteredData);
+  setQueryedData(sortedData);
+}, [processedData, query, sortedOrder]); 
   
 
   console.log("Queryed Data", queryedData);
@@ -229,45 +273,46 @@ useEffect(() => {
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-name"?setSortedOrder("desc-name"):setSortedOrder("asc-name")}>
                           Location Name
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder === "asc-name" ? <FaArrowDown className="mt-0.5"/> :(sortedOrder==="desc-name")?
+                          <FaArrowUp className="mt-0.5"/>:<BsDash className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer " onClick={()=>sortedOrder==="asc-city"?setSortedOrder("desc-city"):setSortedOrder("asc-city")}>
                           City
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder==="asc-city"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-city"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-distance"?setSortedOrder("desc-distance"):setSortedOrder("asc-distance")} >
                           Distance
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder==="asc-distance"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-distance"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 ">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-status"?setSortedOrder("desc-status"):setSortedOrder("asc-status")}>
                           Status
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder==="asc-status"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-status"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-time"?setSortedOrder("desc-time"):setSortedOrder("asc-time")}>
                           Time Left
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder==="asc-time"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-time"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
                         </div>
                       </th>
                       {linkstart === '/superadmin' && 
@@ -277,7 +322,7 @@ useEffect(() => {
                       >
                         <div className="flex gap-2">
                           Access
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          <FaArrowDown className="mt=0.5"/>
                         </div>
                       </th>}
 
