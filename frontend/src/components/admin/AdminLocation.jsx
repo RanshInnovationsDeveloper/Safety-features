@@ -39,12 +39,6 @@ function AdminLocation({isLoading, data, setIsLoading, fetchData}) {
 
 
 
-
-  // Call the updateActiveField function whenever selectedRows or processedData changes
-  // useEffect(() => {
-  //   updateActiveField();
-  // }, [selectedRows, processedData]);
-
   const clearSelection = () => {
     setSelectedRows([]);
   };

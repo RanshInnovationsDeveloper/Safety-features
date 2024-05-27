@@ -3,8 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-export default function AdminLoginPage() {
-  const [credentials, setCredentials] = useState({ userid: "", password: "" });
+
+
+export default function SuperAdminLoginPage() {
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   let navigate = useNavigate();
 
   const location = useLocation();
@@ -12,21 +14,21 @@ export default function AdminLoginPage() {
   const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      navigate(`/admin-dashboard`);
+      navigate(`/superadmin-dashboard`);
     }
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch(
-      "https://safety-features.onrender.com/api/user/login",
+      "https://safety-features.onrender.com/api/admin/login",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userid: credentials.userid,
+          username: credentials.username,
           password: credentials.password,
         }),
       }
@@ -36,8 +38,9 @@ export default function AdminLoginPage() {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
-      localStorage.setItem("role", "admin");
-      navigate(`/admin-dashboard`); //this is redirecting me to the home page after I login
+      localStorage.setItem("role", "superadmin");
+      console.log(localStorage.getItem("role"))
+      navigate(`/superadmin-dashboard`); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
     } else {
@@ -68,11 +71,11 @@ export default function AdminLoginPage() {
                 <input
                   type="text"
                   id="ID"
-                  name="userid"
+                  name="username"
                   className="border w-full rounded-lg h-[2.75rem] px-3 placeholder:text-[#D9D9D9] placeholder:text-lg "
                   placeholder="User Id"
                   required
-                  // value={credentials.userid}
+                  // value={credentials.username}
                   onChange={onChange}
                 />
               </div>

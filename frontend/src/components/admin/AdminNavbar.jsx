@@ -34,7 +34,7 @@ function AdminNavbar() {
   //Logout Function
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/admin/login");
+    navigate("/admin-login");
   };
   return (
     <header className="fixed top-0 flex justify-between items-center h-[4rem] z-10 mt-2 w-full ">
