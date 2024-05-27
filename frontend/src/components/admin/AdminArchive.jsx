@@ -16,7 +16,7 @@ function AdminArchive() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [processedData, setProcessedData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
@@ -40,112 +40,10 @@ function AdminArchive() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const items = await axios.get(
-        //   "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        // );
-        const items = [
-          
-            {
-                "_id": "6648e4b0736720cd04bb66d1",
-                "name": "New N",
-                "address": "Chanditara",
-                "coordinates": [
-                    25.293769766472124,
-                    83.0721803890625
-                ],
-                "expiration": -1,
-                "createdAt": "2024-05-18T17:26:08.602Z",
-                "active": "2024-05-18T17:26:08.602Z",
-                "__v": 0
-            },
-            {
-                "_id": "6648faf7efa520ca0da44704",
-                "name": "Test Place23",
-                "address": "456 Elm St",
-                "coordinates": [
-                    -4.98,
-                    -7
-                ],
-                "expiration": 60,
-                "author": "first user",
-                "createdAt": "2024-05-18T19:01:11.063Z",
-                "active": "2024-05-18T19:01:11.063Z",
-                "__v": 0
-            },
-            {
-                "_id": "6648fbe2aa1a75b4a6c6f1c3",
-                "name": "",
-                "address": "Paris",
-                "coordinates": [
-                    48.86862129431144,
-                    2.331778390512249
-                ],
-                "expiration": -1,
-                "author": "jnnjjbanklandskdsjljasndlajb",
-                "createdAt": "2024-05-18T19:05:06.762Z",
-                "active": "2024-05-18T19:05:06.762Z",
-                "__v": 0
-            },
-            {
-                "_id": "6648fc58aa1a75b4a6c6f1d0",
-                "name": "",
-                "address": "Paris",
-                "coordinates": [
-                    48.8532588666427,
-                    2.364336458826699
-                ],
-                "expiration": -1,
-                "author": "jnnjjbanklandskdsjljasndlajb",
-                "createdAt": "2024-05-18T19:07:04.093Z",
-                "active": "2024-05-18T19:07:04.093Z",
-                "__v": 0
-            },
-            {
-                "_id": "6648fc8daa1a75b4a6c6f1d8",
-                "name": "",
-                "address": "Paris",
-                "coordinates": [
-                    48.84845820069552,
-                    2.3360123316294334
-                ],
-                "expiration": -1,
-                "author": "jnnjjbanklandskdsjljasndlajb",
-                "createdAt": "2024-05-18T19:07:57.464Z",
-                "active": "2024-05-18T19:07:57.464Z",
-                "__v": 0
-            },
-            {
-                "_id": "664b296d0bfa7320f4ac2470",
-                "name": "Mansa Devi Mandir",
-                "address": "Chechpokli++Karnal++Haryana++132001++India",
-                "coordinates": [
-                    29.68589573517149,
-                    76.98758175659182
-                ],
-                "expiration": 60,
-                "author": " ",
-                "createdAt": "2024-05-20T10:43:57.409Z",
-                "active": "2024-05-20T10:43:57.409Z",
-                "__v": 0
-            },
-            {
-                "_id": "664b2ad447da9550d763b4ec",
-                "name": "Policio",
-                "address": "Parisanr tttt++Paris++Île-de-France++75001++France",
-                "coordinates": [
-                    48.85773648501677,
-                    2.346835581970197
-                ],
-                "expiration": -1,
-                "author": "admin",
-                "createdAt": "2024-05-20T10:49:56.022Z",
-                "active": "2024-05-20T10:49:56.022Z",
-                "__v": 0
-            }
-        
-        ];
-        // setData(items?.data);
-        setData(items);
+        const items = await axios.get(
+          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
+        );
+        setData(items?.data);
         setIsLoading(false);
       } catch (error) {
         toast.error(error.message);
@@ -169,7 +67,7 @@ function AdminArchive() {
       });
       const filteredData = newData.filter(
         (item) =>
-          item?.timeLeft !== "Expired" && item?.active === item?.createdAt
+          item?.timeLeft === "Expired" && item?.active === item?.createdAt
       );
       setProcessedData(filteredData);
       setIsLoading(false);
@@ -203,6 +101,7 @@ function AdminArchive() {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = queryedData?.slice(indexOfFirstRow, indexOfLastRow);
   const totalRows = queryedData?.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -216,16 +115,7 @@ function AdminArchive() {
     return <h1> Loading...</h1>;
   }
 
-  if (!isLoading && processedData?.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
-        <p className="text-[#4E7690] mb-14 font-normal text-md">
-          Add some data to see it here
-        </p>
-      </div>
-    );
-  }
+
   return (
     <>
       {console.log("Processses", processedData)}
@@ -235,24 +125,24 @@ function AdminArchive() {
             <div className="flex flex-row justify-between items-center px-2 py-3">
               <div className="flex flex-col items-start gap-1 justify-center">
                 <h1 className=" text-lg font-semibold text-[#101828]">
-                  Current Locations
+                  Archive
                 </h1>
                 <p className="text-sm font-normal text-[#4E7690]">
-                  Safety Locations that are live on website
+                All the temporary locations that are deleted and can be restored again
                 </p>
               </div>
-              <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center ">
-                <button
-                  className="flex justify-center items-center  w-full gap-2"
-                  onClick={toggleOpen}
-                >
-                  <FaPlus />
-                  <p className="text-[14px]">Add Location</p>
-                </button>
-              </div>
-              <AddLocationPopup open={open} setOpen={setOpen} />
+
             </div>
 
+            {!isLoading && queryedData?.length === 0 ? <>
+              <div className="flex flex-col justify-center items-center h-screen">
+        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
+        <p className="text-[#4E7690] mb-14 font-normal text-md">
+          Add some data to see it here
+        </p>
+      </div>
+            </>:
+            <>
             <div class="border rounded-lg divide-y divide-gray-200 px-4 ">
               <div class="py-3 px-4 flex flex-row items-center justify-between ">
                 <div className="border border-gray-200 shadow-sm rounded-lg text-[#71839B] text-sm font-medium flex flex-row justify-center items-center">
@@ -266,6 +156,8 @@ function AdminArchive() {
                     Custom Date
                   </button>
                 </div>
+                
+                <div className="flex gap-5 flex-row justify-center items-center">
                 <div class="relative w-[400px]  ">
                   <label class="sr-only">Search</label>
                   <input
@@ -293,36 +185,18 @@ function AdminArchive() {
                     </svg>
                   </div>
                 </div>
-                <div className="flex gap-5 flex-row justify-center items-center">
                   <button className="px-3 py-3 text-[#4E7690] flex justify-center items-center gap-2 text-sm font-medium">
                     <img src="/filter-lines.svg" alt="filter" />
                     Filter
                   </button>
-                  <button className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
-                    <AiOutlineDelete className=" w-5 h-5" />
-                    Delete
-                  </button>
+
                 </div>
               </div>
               <div class="overflow-hidden">
                 <table class="min-w-full divide-y divide-[#EAECF0] ">
                   <thead class="bg-[#FCFCFD] ">
                     <tr>
-                      <th scope="col" class="py-3 px-4 pe-0">
-                        <div class="flex items-center h-5">
-                          <input
-                            id="hs-table-pagination-checkbox-all"
-                            type="checkbox"
-                            class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                          />
-                          <label
-                            for="hs-table-pagination-checkbox-all"
-                            class="sr-only"
-                          >
-                            Checkbox
-                          </label>
-                        </div>
-                      </th>
+                      
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
@@ -381,21 +255,7 @@ function AdminArchive() {
                     {currentRows &&
                       currentRows?.map((row, index) => (
                         <tr key={index}>
-                          <td class="py-3 ps-4">
-                            <div class="flex items-center h-5">
-                              <input
-                                id="hs-table-pagination-checkbox-1"
-                                type="checkbox"
-                                class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                              />
-                              <label
-                                for="hs-table-pagination-checkbox-1"
-                                class="sr-only"
-                              >
-                                Checkbox
-                              </label>
-                            </div>
-                          </td>
+                         
                           <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#101828] ">
                             {row?.name}
                           </td>
@@ -437,12 +297,14 @@ function AdminArchive() {
                                   hour12: false,
                                 }
                               );
-                              return `${formattedDate} ${formattedTime}`;
+                              return <div className="flex gap-2 "><p className="">{formattedDate}</p>
+                              <p className="text-[#FE9526]">{formattedTime}</p>
+                              </div> ;
                             })()}
                           </td>
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                             {(() => {
-                              const date = new Date(row?.createdAt);
+                              const date = new Date( new Date(row?.createdAt).getTime() + (row?.expiration * 60 * 1000));
                               const formattedDate = date.toLocaleDateString(
                                 "en-GB",
                                 {
@@ -459,15 +321,17 @@ function AdminArchive() {
                                   hour12: false,
                                 }
                               );
-                              return `${formattedDate} ${formattedTime}`;
+                              return <div className="flex gap-2 "><p className="">{formattedDate}</p>
+                              <p className="text-[#FE9526]">{formattedTime}</p>
+                              </div> ;
                             })()}
                           </td>
-                          <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
+                          <td class="px-3 py-3 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
                             <button
                               type="button"
                               class="inline-flex items-center  text-sm font-semibold rounded-lg border "
                             >
-                              <FaRegEdit className=" w-4 h-4 text-[#4E7690]" />
+                              <img src="/delete.svg" alt="delete" className=" w-5 h-5 text-[#4E7690]" />
                             </button>
                           </td>
                         </tr>
@@ -478,16 +342,16 @@ function AdminArchive() {
               <div class="py-2 px-4 flex items-center justify-between">
                 <div className=" text-sm text-[#4E7690] font-medium">
                   <h1>
-                    {indexOfFirstRow + 1} -
-                    {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of
-                    {totalRows} items
+                    {indexOfFirstRow + 1} - {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of {totalRows} items
                   </h1>
                 </div>
                 <nav class="flex items-center space-x-1 gap-2">
                   <button
                     type="button"
                     class="px-3 py-2 rounded-lg border border-gray-200 shadow-sm text-[#71839B] font-medium text-sm hover:bg-[#4E76904D] hover:text-[#4E7690]"
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={() => { if(currentPage !== 1){
+                      handlePageChange(currentPage - 1)
+                    } }}
                   >
                     <span aria-hidden="true">Previous</span>
                     <span class="sr-only">Previous</span>
@@ -496,13 +360,17 @@ function AdminArchive() {
                   <button
                     type="button"
                     class="px-3 py-2 border border-gray-200 shadow-sm text-[#71839B] font-medium  text-sm rounded-lg hover:bg-[#4E76904D] hover:text-[#4E7690] "
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={() => {if(currentPage !== totalPages){handlePageChange(currentPage + 1)}}}
                   >
+                
                     <span aria-hidden="true">Next</span>
                   </button>
+                  {console.log("Total Pages", totalPages)}
                 </nav>
               </div>
             </div>
+            </>
+            }
           </div>
         </div>
       </div>

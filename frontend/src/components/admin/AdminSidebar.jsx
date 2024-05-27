@@ -15,14 +15,18 @@ import { IoArchiveOutline,  IoArchive } from "react-icons/io5";
 import { AiOutlineDelete } from "react-icons/ai";
 import { MdMovieEdit } from "react-icons/md";
 import AddLocationPopup from "./AddLocationPopup";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const AdminSideBar = ({ active }) => {
+const AdminSideBar = ({ active, fetchData, open ,setOpen }) => {
+
 
   const location = useLocation();
 
   const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 
-  const [open, setOpen] = useState(false);
+
+  // const [open, setOpen] = useState(false);
   console.log(linkstart)
 
   const toggleOpen  = () => {
@@ -39,8 +43,10 @@ const AdminSideBar = ({ active }) => {
           <h1 className="text-center text-[14px] font-semibold">Shri Bhajan Lal Sharma 
 Hon’ble Chief Minister of Rajasthan</h1>
         </div>
-        <div className="  rounded-[50px] text-white bg-[#4E7690] py-3 items-center ">
-          <button className="flex justify-center items-center  w-full gap-2" onClick={toggleOpen}>
+        <div className="  rounded-[50px] text-white bg-[#4E7690] py-3 items-center hover:cursor-pointer "
+        onClick={toggleOpen}
+        >
+          <button className="flex justify-center items-center  w-full gap-2" >
             <img src="/Vector3.svg"
             alt="im"
 
@@ -48,10 +54,7 @@ Hon’ble Chief Minister of Rajasthan</h1>
 
             <p className="text-[14px]">Add New Location</p>
           </button>
-          <div className=" ">
-
-          <AddLocationPopup open={open}/>
-          </div>
+       
           
         </div>
       </div>

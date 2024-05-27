@@ -20,7 +20,7 @@ function App() {
           <Route path="/admin-dashboard" element={<Admin />} />
           <Route path="/admin-location" element={<AdminLocationPage />} />
           <Route path="/admin-archive" element={<AdminArchivePage />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route
             path="/admin-delete-location"
             element={<AdminDeleteLocationPage />}
@@ -30,7 +30,7 @@ function App() {
          <Route path="/superadmin-dashboard" element={<Admin />} />
           <Route path="/superadmin-location" element={<AdminLocationPage />} />
           <Route path="/superadmin-archive" element={<AdminArchivePage />} />
-          <Route path="/superadmin/login" element={<AdminLoginPage />} />
+          <Route path="/superadmin-login" element={<AdminLoginPage />} />
           <Route path="/superadmin-access" element={<AdminAccessPage />} />
           <Route path="/superadmin-edit-history" element={<AdminEditHistoryPage />} />
           <Route

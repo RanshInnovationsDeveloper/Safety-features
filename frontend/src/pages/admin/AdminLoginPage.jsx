@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
-      navigate("/admin-dashboard"); //this is redirecting me to the home page after I login
+      navigate(`/${linkstart}-dashboard`); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
     } else {

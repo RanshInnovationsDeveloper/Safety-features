@@ -3,23 +3,55 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { FaPlus } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
-import { FaArrowDown } from "react-icons/fa6";
+import { FaArrowDown,FaArrowUp } from "react-icons/fa6";
+import {BsDash} from "react-icons/bs"
 import axios from "axios";
 import { toast } from "react-toastify";
 import AddLocationPopup from "./AddLocationPopup";
+import { LuMinusSquare } from "react-icons/lu";
 import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
+import { useLocation } from "react-router-dom";
 
-function AdminLocation() {
-  const [selectedRows, setSelectedRows] = useState([]);
+
+
+function AdminLocation({isLoading, data, setIsLoading, fetchData}) {
   const [processedData, setProcessedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState();
+
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
+  const [sortedOrder,setSortedOrder] = useState("asc-name");
+   const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleSelect = (rowIndex) => {
+    setSelectedRows((prevSelected) => {
+      if (prevSelected.includes(rowIndex)) {
+        return prevSelected.filter((index) => index !== rowIndex);
+      } else {
+        return [...prevSelected, rowIndex];
+      }
+    });
+  };
+
+
+
+
+
+  // Call the updateActiveField function whenever selectedRows or processedData changes
+  // useEffect(() => {
+  //   updateActiveField();
+  // }, [selectedRows, processedData]);
+
+  const clearSelection = () => {
+    setSelectedRows([]);
+  };
+
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 
   //TODO:This function can be added to context and this data can be fetched straight form ocntext then
   useEffect(() => {
@@ -38,25 +70,15 @@ function AdminLocation() {
 
   //This one fetches the data from the API
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const items = await axios.get(
-          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        );
-        setData(items?.data);
-        setIsLoading(false);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
+    
     fetchData();
   }, []);
-  console.log(data?.[6]?.expiration);
-  console.log(data?.[0]?.createdAt);
+
+  console.log("Data", data);
   //This one calculates the time left and distance of the location and also filter out expired data'
   useEffect(() => {
     if (data) {
-      const newData = data.map((item) => {
+      const newData = data?.map((item) => {
         const timeLeft = calculateExpiration(item.expiration, item.createdAt);
         const distance = calculateDistance(
           item?.coordinates[0],
@@ -67,23 +89,76 @@ function AdminLocation() {
       });
       const filteredData = newData.filter(
         (item) =>
-          item?.timeLeft !== "Expired" && item?.active !== item?.createdAt
+          item?.timeLeft !== "Expired" && item?.active === item?.createdAt
       );
       setProcessedData(filteredData);
       setIsLoading(false);
     }
   }, [data]);
 
-  //This one is to query
-  useEffect(() => {
-    if (query === "") setQueryedData(processedData);
-    const filteredData = processedData.filter(
-      (item) =>
-        item?.name.toLowerCase().includes(query.toLowerCase()) ||
-        item?.address.toLowerCase().includes(query.toLowerCase())
-    );
-    setQueryedData(filteredData);
-  }, [data, query]);
+
+ 
+//This one is to query
+useEffect(() => {
+  // function to sort
+  function sortData(dataArray){
+    let sortedData=[];
+    if(sortedOrder==="asc-name"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.name?.localeCompare(b.name));
+    }
+    if(sortedOrder==="desc-name"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.name?.localeCompare(a.name));
+    }
+    if(sortedOrder==="asc-city"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.address?.split("++")[1]?.localeCompare(b.address.split("++")[1]));
+    }
+    if(sortedOrder==="desc-city"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.address?.split("++")[1]?.localeCompare(a.address.split("++")[1]));
+    }
+    if(sortedOrder==="asc-distance"){
+      sortedData= [...dataArray]?.sort((a,b)=>parseFloat(a.distance) - parseFloat(b.distance));
+    }
+    if(sortedOrder==="desc-distance"){
+      sortedData= [...dataArray]?.sort((a,b)=>parseFloat(b.distance) - parseFloat(a.distance));
+    }
+    if(sortedOrder==="asc-status"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.expiration-b.expiration);
+    }
+    if(sortedOrder==="desc-status"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.expiration-a.expiration);
+    }
+    if(sortedOrder==="asc-time"){
+      sortedData= [...dataArray]?.sort((a,b)=>a.timeLeft-b.timeLeft);
+    }
+    if(sortedOrder==="desc-time"){
+      sortedData= [...dataArray]?.sort((a,b)=>b.timeLeft-a.timeLeft);
+    }
+    return sortedData;
+  }
+
+  console.log(sortedOrder)
+
+ 
+ 
+  let trimmedQuery = query.trim();
+
+  if (trimmedQuery === "") {
+    const sortedData = sortData(processedData);
+    setQueryedData(sortedData)
+    return; 
+  }
+
+  const filteredData = processedData?.filter(
+    (item) =>
+      item?.name?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+      item?.address?.toLowerCase().includes(trimmedQuery.toLowerCase())
+  );
+  const sortedData = sortData(filteredData);
+  setQueryedData(sortedData);
+}, [processedData, query, sortedOrder]); 
+  
+
+  console.log("Queryed Data", queryedData);
 
   //Data to style
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,6 +167,7 @@ function AdminLocation() {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = queryedData?.slice(indexOfFirstRow, indexOfLastRow);
   const totalRows = queryedData?.length;
+  const totalPage = Math.ceil(totalRows / rowsPerPage);
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -101,38 +177,57 @@ function AdminLocation() {
     setCurrentPage(pageNumber);
   };
 
+  const archiveSelectedRows = async () => {
+    setIsLoading(true);
+    try {
+
+      // const selectedRowIds = selectedRows.map(row => row._id);
+      const promises = selectedRows.map(id => axios.put(`https://safety-features.onrender.com/api/place/archiveplace/${id}`));
+      await Promise.all(promises);
+      fetchData();
+      // Handle success
+    } catch (error) {
+      // Handle error
+      toast.error(error.message);
+    }
+  };
+
   if (isLoading) {
     return <h1> Loading...</h1>;
   }
 
   return (
     <>
-      {console.log(data)}
       {console.log("Processses", processedData)}
       <div class="flex flex-col">
-        {console.log(processedData)}
         <div class="-m-1.5 overflow-x-auto">
           <div class=" min-w-full inline-block align-middle">
             <div className="flex flex-row justify-between items-center px-2 py-3">
               <div className="flex flex-col items-start gap-1 justify-center">
                 <h1 className=" text-lg font-semibold text-[#101828]">
-                  All Locations
+                  Current Locations
                 </h1>
                 <p className="text-sm font-normal text-[#4E7690]">
                   Safety Locations that are live on website
                 </p>
               </div>
-              <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center ">
+              <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center hover:cursor-pointer "
+                          onClick={toggleOpen}>
                 <button
                   className="flex justify-center items-center  w-full gap-2"
-                  onClick={toggleOpen}
+      
                 >
                   <FaPlus />
                   <p className="text-[14px]">Add Location</p>
                 </button>
               </div>
-              <AddLocationPopup open={open} setOpen={setOpen} />
-            </div>
+              </div>
+              {open &&               <div className="">
+              <AddLocationPopup open={open} setOpen={setOpen} fetchData={fetchData} />
+              </div>}
+
+              
+       
             {(!isLoading && processedData?.length === 0) ? <>
               <div className="flex flex-col justify-center items-center h-[60vh]">
         <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
@@ -141,9 +236,6 @@ function AdminLocation() {
         </p>
       </div>
             </> : <>
-            
-           
-
             <div class="border rounded-lg divide-y divide-gray-200 px-4 ">
               <div class="py-3 px-4 flex flex-row items-center justify-between ">
                 <div className="border border-gray-200 shadow-sm rounded-lg text-[#71839B] text-sm font-medium flex flex-row justify-center items-center">
@@ -189,7 +281,7 @@ function AdminLocation() {
                     <img src="/filter-lines.svg" alt="filter" />
                     Filter
                   </button>
-                  <button className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
+                  <button onClick={archiveSelectedRows} className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
                     <AiOutlineDelete className=" w-5 h-5" />
                     Delete
                   </button>
@@ -200,65 +292,77 @@ function AdminLocation() {
                   <thead class="bg-[#FCFCFD] ">
                     <tr>
                       <th scope="col" class="py-3 px-4 pe-0">
-                        <div class="flex items-center h-5">
-                          <input
+                        <div class="flex items-center  w-5 h-5 hover:cursor-pointer" onClick={clearSelection}>
+                          {/* <input
                             id="hs-table-pagination-checkbox-all"
                             type="checkbox"
-                            class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                            class="custom-checkbox "
                           />
                           <label
                             for="hs-table-pagination-checkbox-all"
                             class="sr-only"
                           >
                             Checkbox
-                          </label>
+                          </label> */}
+                          <LuMinusSquare className="text-[#4E7690] w-5 h-5" />
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-name"?setSortedOrder("desc-name"):setSortedOrder("asc-name")}>
                           Location Name
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder !== "desc-name" ? <FaArrowDown className="mt-0.5"/> :
+                          <FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer " onClick={()=>sortedOrder!=="desc-city"?setSortedOrder("desc-city"):setSortedOrder("asc-city")}>
                           City
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder!=="desc-city"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-distance"?setSortedOrder("desc-distance"):setSortedOrder("asc-distance")} >
                           Distance
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder!=="desc-distance"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 ">
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-status"?setSortedOrder("desc-status"):setSortedOrder("asc-status")}>
                           Status
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          {sortedOrder!=="desc-status"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
+                        scope="col"
+                        class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
+                      >
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-time"?setSortedOrder("desc-time"):setSortedOrder("asc-time")}>
+                          Time Left
+                          {sortedOrder!=="desc-time"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
+                        </div>
+                      </th>
+                      {linkstart === '/superadmin' && 
+                        <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
                         <div className="flex gap-2">
-                          Time Left
-                          <img src="/arrow-down.svg" alt="arrow" />
+                          Access
                         </div>
-                      </th>
+                      </th>}
+
                       <th
                         scope="col"
                         class="px-4 py-3 text-center text-xs font-medium text-[#4E7690] bg-[#DCE4E9]  "
@@ -269,13 +373,17 @@ function AdminLocation() {
                   </thead>
                   <tbody class="divide-y divide-gray-200 ">
                     {currentRows?.map((row, index) => (
+
                       <tr key={index}>
+                                              {console.log(row)}
                         <td class="py-3 ps-4">
                           <div class="flex items-center h-5">
                             <input
                               id="hs-table-pagination-checkbox-1"
                               type="checkbox"
-                              class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                              class="custom-checkbox "
+                              checked={selectedRows.includes(row._id)}
+                              onChange={() => handleSelect(row._id)}
                             />
                             <label
                               for="hs-table-pagination-checkbox-1"
@@ -289,7 +397,7 @@ function AdminLocation() {
                           {row?.name}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-normal">
-                          {row?.address}
+                          {row?.address.split("++")[1]}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
                           {row?.distance}
@@ -300,20 +408,21 @@ function AdminLocation() {
                         >
                           <h1
                             className={`w-fit flex flex-row gap-1 justify-center items-center rounded-[50px] py-1 px-3 ${
-                              row?.expiration === -3600
+                              row?.expiration === -1
                                 ? "text-[#037847]  bg-[#ECFDF3]"
                                 : "text-[#364254] bg-[#F2F4F7]"
                             }`}
                           >
                             <GoDotFill className="  rounded-full" />
-                            {row?.expiration === -3600
+                            {row?.expiration === -1
                               ? "Permanent"
                               : "Temporary"}
                           </h1>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-[#4E7690] font-semibold ">
-                          {calculateExpiration(row?.expiration, row?.createdAt)}
+                          {row?.timeLeft}
                         </td>
+                       
                         <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium bg-[#DCE4E9]">
                           <button
                             type="button"
@@ -330,16 +439,14 @@ function AdminLocation() {
               <div class="py-2 px-4 flex items-center justify-between">
                 <div className=" text-sm text-[#4E7690] font-medium">
                   <h1>
-                    {indexOfFirstRow + 1} -
-                    {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of
-                    {totalRows} items
+                    {indexOfFirstRow + 1} - {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of {totalRows} items
                   </h1>
                 </div>
                 <nav class="flex items-center space-x-1 gap-2">
                   <button
                     type="button"
                     class="px-3 py-2 rounded-lg border border-gray-200 shadow-sm text-[#71839B] font-medium text-sm hover:bg-[#4E76904D] hover:text-[#4E7690]"
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={() => { if(currentPage !== 1) {handlePageChange(currentPage - 1)}}}
                   >
                     <span aria-hidden="true">Previous</span>
                     <span class="sr-only">Previous</span>
@@ -348,7 +455,7 @@ function AdminLocation() {
                   <button
                     type="button"
                     class="px-3 py-2 border border-gray-200 shadow-sm text-[#71839B] font-medium  text-sm rounded-lg hover:bg-[#4E76904D] hover:text-[#4E7690] "
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={() => { if(currentPage !== totalPage) {handlePageChange(currentPage + 1)}}}
                   >
                     <span aria-hidden="true">Next</span>
                   </button>

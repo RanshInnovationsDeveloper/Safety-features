@@ -8,7 +8,7 @@ const AdminDeleteLocationPage = () => {
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      navigate("/admin/login");
+      navigate("/admin-login");
     }
   }, [localStorage.getItem("token")]);
 

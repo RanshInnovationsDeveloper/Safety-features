@@ -45,7 +45,10 @@ function App() {
   const [optionClicked, setOptionClicked] = useState(false);
   const [left, setLeft] = useState(false);
   const [destination2, setDestination2] = useState([]);
+  const [arrowMarkers, setArrowMarkers] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [directionsPanel, setDirectionsPanel] = useState("");
+
   const category = [
     'Metro Station', 'Airports', 'Government Buildings', 'Heritage Monuments', 'Army Area', 'Para Police', 'Railway Police Force', 'Quarters'
   ];
@@ -60,6 +63,45 @@ function App() {
   }
 
   const destination1Ref = useRef(null);
+
+  const updateDirections = () => {
+    if (!map || !directionsResponse) return;
+    const route = directionsResponse.routes[0];
+    const leg = route.legs[0];
+
+    let stepIndex = -1;
+    let nextSegment = -1;
+    let steps = [];
+
+    for (let i = 0; i < leg.steps.length; i++) {
+      if (leg.steps[i].distance.value > 50) {
+        nextSegment = leg.steps[i].path;
+        stepIndex = i;
+        steps = leg.steps;
+        break;
+      }
+    }
+
+    if (stepIndex === -1) {
+      stepIndex = 0;
+      nextSegment = leg.steps[0].path;
+      steps = leg.steps;
+    }
+
+    const step = steps[stepIndex];
+    const distanceToNextSegment = window.google.maps.geometry.spherical.computeDistanceBetween(
+      center,
+      nextSegment[0]
+    );
+
+    let instruction = step.instructions.replace(/<[^>]+>/g, "");
+
+    setDirectionsPanel(
+      `<strong>${instruction}</strong> in ${Math.round(
+        distanceToNextSegment
+      )} meters`
+    );
+  };
 
   const darkmode = [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
@@ -150,18 +192,40 @@ function App() {
     setDistance('');
     setDuration('');
   };
+  
   useEffect(() => {
+    let watchId;
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCenter({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      });
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          console.log("position done")
+        },
+        (error) => {
+          console.error("Error watching position:", error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
     } else {
       console.log("Geolocation is not supported by this browser.");
     }
+
+    // Cleanup the watcher on component unmount
+    return () => {
+      if (navigator.geolocation && watchId !== undefined) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, []);
+
 
 
   const handlemenuclick = async (station) => {
@@ -180,7 +244,6 @@ function App() {
   };
   const getNearbySafety = async () => {
     if (!center) return;
-
     const response = await axios.get(
       ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=police&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
     );
@@ -194,7 +257,7 @@ function App() {
 
   const handleButtonClick = async (props) => {
     const res = await axios.get(
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=${props}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
+     `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=${props}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
     );
     setClicked(res.data.results)
   };
@@ -204,6 +267,11 @@ function App() {
     getPlaces();
     getNearbySafety();
   }, [center]);
+
+  useEffect(() => {
+    const interval = setInterval(updateDirections, 1000);
+    return () => clearInterval(interval);
+  }, [directionsResponse, map]);
 
   if (!isLoaded) {
     return <SkeletonText />;
@@ -230,9 +298,56 @@ function App() {
     setModal(true); // Open modal when marker is clicked()
   };
 
-  // console.log(places)
+  const calculateBearing = (p1, p2) => {
+    if (!p1 || !p2 || !p1.lat || !p1.lng || !p2.lat || !p2.lng) {
+      console.error("Invalid points");
+      return 0;
+    }
 
+    const lat1 = (Math.PI / 180) * p1.lat;
+    const lng1 = (Math.PI / 180) * p1.lng;
+    const lat2 = (Math.PI / 180) * p2.lat;
+    const lng2 = (Math.PI / 180) * p2.lng;
 
+    const y = Math.sin(lng2 - lng1) * Math.cos(lat2);
+    const x =
+      Math.cos(lat1) * Math.sin(lat2) -
+      Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
+    const bearing = (Math.atan2(y, x) * 180) / Math.PI;
+    return bearing;
+  };
+
+  const getArrowIcon = (rotation) => {
+    return {
+      path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      fillColor: "blue",
+      fillOpacity: 1,
+      strokeColor: "blue",
+      strokeWeight: 1,
+      rotation: rotation,
+      scale: 6,
+    };
+  };
+
+  const calculateRouteArrowMarkers = (directionsResponse) => {
+    if (!directionsResponse) return;
+
+    const route = directionsResponse.routes[0];
+    const path = route.overview_path;
+    const step = 100; // Adjust the step as needed
+
+    let arrowMarkers = [];
+
+    for (let i = 0; i < path.length - 1; i += step) {
+      const bearing = calculateBearing(path[i], path[i + step]);
+      arrowMarkers.push({
+        position: path[i],
+        icon: getArrowIcon(bearing),
+      });
+    }
+
+    setArrowMarkers(arrowMarkers);
+  };
 
   return (
     <Flex
@@ -257,6 +372,10 @@ function App() {
           }}
           onLoad={(map) => setMap(map)}
         >
+            {arrowMarkers.map((marker, index) => (
+            <Marker key={index} position={marker.position} icon={marker.icon} />
+            ))}
+
           {policeStations.map((station, index) => (
             <>
               <Marker position={center} />
@@ -492,6 +611,22 @@ function App() {
             </div>
           </Box>
         </div>
+
+        {/* instruction panel */}
+        {/* <div
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: "300px",
+          height: "100%",
+          backgroundColor: "white",
+          zIndex: 1000,
+          overflowY: "auto",
+          padding: "10px",
+        }}
+        dangerouslySetInnerHTML={{ __html: directionsPanel }}
+      ></div> */}
 
 
       </div>

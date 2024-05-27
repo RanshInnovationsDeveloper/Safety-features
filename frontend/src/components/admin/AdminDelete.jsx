@@ -11,15 +11,69 @@ import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
+import "../styles/User.css";
+import { LuMinusSquare } from "react-icons/lu";
 
 function AdminDelete() {
-  const [selectedRows, setSelectedRows] = useState([]);
   const [processedData, setProcessedData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState();
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
+  const [checkedRows, setCheckedRows] = useState({});
+
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleNonObjectCheckboxChange = (index) => {
+    const newCheckedRows = { ...checkedRows };
+    const isChecked = !newCheckedRows[index];
+
+    // Update the state of the current non-object row
+    newCheckedRows[index] = isChecked;
+
+    // Update the state of subsequent object rows until the next non-object row
+    for (let i = index + 1; i < currentRows.length; i++) {
+      if (!isObject(currentRows[i])) {
+        break;
+      }
+      newCheckedRows[i] = isChecked;
+      handleSelect(currentRows[i]?._id);
+    }
+
+    setCheckedRows(newCheckedRows);
+    console.log(newCheckedRows)
+  };
+
+  const handleObjectCheckboxChange = (index, id) => {
+    const newCheckedRows = { ...checkedRows };
+    newCheckedRows[index] = !newCheckedRows[index];
+    setCheckedRows(newCheckedRows);
+    handleSelect(id);
+  };
+
+
+
+  const handleSelect = (rowIndex) => {
+    setSelectedRows((prevSelected) => {
+      if (prevSelected.includes(rowIndex)) {
+        return prevSelected.filter((index) => index !== rowIndex);
+      } else {
+        return [...prevSelected, rowIndex];
+      }
+    });
+  };
+
+
+  const clearSelection = () => {
+    setSelectedRows([]);
+    const newCheckedRows = {};
+    Object.keys(checkedRows).forEach(key => {
+      newCheckedRows[key] = false;
+    });
+    setCheckedRows(newCheckedRows);
+    console.log(checkedRows)
+  };
 
   //TODO:This function can be added to context and this data can be fetched straight form ocntext then
   useEffect(() => {
@@ -35,96 +89,23 @@ function AdminDelete() {
       toast.error("Geolocation is not supported by this browser.");
     }
   }, []);
+  const fetchData = async () => {
+    try {
+      const items = await axios.get(
+        "https://safety-features.onrender.com/api/place/fetchAllPlaces"
+      );
+      const deletedData = items?.data?.filter((item) => {
+         return item?.active!==item?.createdAt;
+      })
+      setData(deletedData);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   //This one fetches the data from the API
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // const items = await axios.get(
-        //   "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        // );
 
-        const items =[
-          {
-              "_id": "6648faf7efa520ca0da44704",
-              "name": "Test Place23",
-              "address": "456 Elm St",
-              "coordinates": [
-                  -4.98,
-                  -7
-              ],
-              "expiration": 60,
-              "author": "first user",
-              "createdAt": "2024-05-18T19:01:11.063Z",
-              "active": "2026-05-18T19:01:11.063Z",
-              "__v": 0
-          },
-          {
-              "_id": "6648fbe2aa1a75b4a6c6f1c3",
-              "name": "",
-              "address": "Paris",
-              "coordinates": [
-                  48.86862129431144,
-                  2.331778390512249
-              ],
-              "expiration": -1,
-              "author": "jnnjjbanklandskdsjljasndlajb",
-              "createdAt": "2024-05-18T19:05:06.762Z",
-              "active": "2025-05-18T19:05:06.762Z",
-              "__v": 0
-          },
-          {
-              "_id": "6648fc58aa1a75b4a6c6f1d0",
-              "name": "",
-              "address": "Paris",
-              "coordinates": [
-                  48.8532588666427,
-                  2.364336458826699
-              ],
-              "expiration": -1,
-              "author": "jnnjjbanklandskdsjljasndlajb",
-              "createdAt": "2024-05-18T19:07:04.093Z",
-              "active": "2025-05-18T19:07:04.093Z",
-              "__v": 0
-          },
-          {
-              "_id": "6648fc8daa1a75b4a6c6f1d8",
-              "name": "",
-              "address": "Paris",
-              "coordinates": [
-                  48.84845820069552,
-                  2.3360123316294334
-              ],
-              "expiration": -1,
-              "author": "jnnjjbanklandskdsjljasndlajb",
-              "createdAt": "2024-05-18T19:07:57.464Z",
-              "active": "2026-05-18T19:07:57.464Z",
-              "__v": 0
-          },
-          {
-              "_id": "664b2ad447da9550d763b4ec",
-              "name": "Policio",
-              "address": "Parisanr tttt++Paris++Île-de-France++75001++France",
-              "coordinates": [
-                  48.85773648501677,
-                  2.346835581970197
-              ],
-              "expiration": -1,
-              "author": "admin",
-              "createdAt": "2024-05-20T10:49:56.022Z",
-              "active": "2025-05-20T10:49:56.022Z",
-              "__v": 0
-          }
-      ];
-        // const deletedData = items?.data?.filter((item) => {
-        const deletedData = items?.filter((item) => {
-           return item?.active!==item?.createdAt;
-        })
-        setData(deletedData);
-        setIsLoading(false);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
     fetchData();
   }, []);
 
@@ -196,7 +177,9 @@ const flatteningData = (data) => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const allDataArray = flatteningData(queryedData);
   const currentRows = allDataArray?.slice(indexOfFirstRow, indexOfLastRow);
-  const totalRows = allDataArray?.length;
+
+  const totalRows = allDataArray?.filter(item => isObject(item)).length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
   console.log(allDataArray)
   const [open, setOpen] = useState(false);
 const toggleOpen = () => {
@@ -208,25 +191,52 @@ const toggleOpen = () => {
     setCurrentPage(pageNumber);
   };
 
+  const deleteSelectedRows = async () => {
+    setIsLoading(true);
+    try {
+
+      // const selectedRowIds = selectedRows.map(row => row._id);
+      const promises = selectedRows.map(id => axios.delete(`https://safety-features.onrender.com/api/place/deleteplace/${id}`));
+      await Promise.all(promises);
+    clearSelection();
+      fetchData();
+      // Handle success
+    } catch (error) {
+      // Handle error
+      toast.error(error.message);
+    }
+  };
+
+  // const handleNonObjectCheckboxChange = (index) => {
+  //   const newCheckedRows = { ...selectedRows };
+  //   const isChecked = !newCheckedRows[index];
+
+  //   // Update the state of the current non-object row
+  //   newCheckedRows[index] = isChecked;
+
+  //   // Update the state of subsequent object rows until the next non-object row
+  //   for (let i = index + 1; i < currentRows.length; i++) {
+  //     if (!isObject(currentRows[i])) {
+  //       break;
+  //     }
+  //     newCheckedRows[i] = isChecked;
+  //   }
+
+  //   selectedRows(newCheckedRows);
+  // };
+
   if (isLoading) {
     return <h1> Loading...</h1>;
   }
 
-  if (!isLoading && processedData?.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-        <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
-        <p className="text-[#4E7690] mb-14 font-normal text-md">
-          Delete some data to see it here
-        </p>
-      </div>
-    );
-  }
+
 
   //This function is to check if the value is an object
   function isObject(value) {
     return value && typeof value === 'object' && value.constructor === Object;
   }
+
+console.log(currentRows);
   return(
     <div class="flex flex-col">
     <div class="-m-1.5 overflow-x-auto">
@@ -234,10 +244,10 @@ const toggleOpen = () => {
         <div className="flex flex-row justify-between items-center px-2 py-3">
           <div className="flex flex-col items-start gap-1 justify-center">
             <h1 className=" text-lg font-semibold text-[#101828]">
-              Current Locations
+              Deleted Locations
             </h1>
             <p className="text-sm font-normal text-[#4E7690]">
-              Safety Locations that are live on website
+            Lorem ipsum dolor sit amet consectetur.
             </p>
           </div>
           <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center ">
@@ -304,9 +314,9 @@ const toggleOpen = () => {
                 <img src="/filter-lines.svg" alt="filter" />
                 Filter
               </button>
-              <button className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
+              <button onClick={deleteSelectedRows} className="bg-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg text-[#FDEBEA]">
                 <AiOutlineDelete className=" w-5 h-5" />
-                Delete
+                Empty Trash
               </button>
             </div>
           </div>
@@ -315,19 +325,9 @@ const toggleOpen = () => {
               <thead class="bg-[#FCFCFD] ">
                 <tr>
                   <th scope="col" class="py-3 px-4 pe-0">
-                    <div class="flex items-center h-5">
-                      <input
-                        id="hs-table-pagination-checkbox-all"
-                        type="checkbox"
-                        class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                      />
-                      <label
-                        for="hs-table-pagination-checkbox-all"
-                        class="sr-only"
-                      >
-                        Checkbox
-                      </label>
-                    </div>
+                  <div class="flex items-center  w-5 h-5 hover:cursor-pointer" onClick={clearSelection} >
+                      <LuMinusSquare className="text-[#4E7690] w-5 h-5" />
+                     </div>
                   </th>
                   <th
                     scope="col"
@@ -386,7 +386,9 @@ const toggleOpen = () => {
             <input
               id="hs-table-pagination-checkbox-1"
               type="checkbox"
-              class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+              class=" custom-checkbox"
+              checked={checkedRows[index]}
+              onChange={() => handleNonObjectCheckboxChange(index)}
             />
           </div>
         </td>
@@ -411,7 +413,10 @@ const toggleOpen = () => {
                         <input
                           id="hs-table-pagination-checkbox-1"
                           type="checkbox"
-                          class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                          class="custom-checkbox"
+                          // checked={selectedRows.includes(row._id)}
+                          checked={checkedRows[index]}
+                          onChange={() => handleObjectCheckboxChange(index, row?._id)}
                         />
                         <label
                           for="hs-table-pagination-checkbox-1"
@@ -473,16 +478,14 @@ const toggleOpen = () => {
           <div class="py-2 px-4 flex items-center justify-between">
             <div className=" text-sm text-[#4E7690] font-medium">
               <h1>
-                {indexOfFirstRow + 1} -
-                {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of
-                {totalRows} items
+                {indexOfFirstRow + 1} - {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of {totalRows} items
               </h1>
             </div>
             <nav class="flex items-center space-x-1 gap-2">
               <button
                 type="button"
                 class="px-3 py-2 rounded-lg border border-gray-200 shadow-sm text-[#71839B] font-medium text-sm hover:bg-[#4E76904D] hover:text-[#4E7690]"
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() => { if(currentPage !== 1){handlePageChange(currentPage - 1)}}}
               >
                 <span aria-hidden="true">Previous</span>
                 <span class="sr-only">Previous</span>
@@ -491,7 +494,7 @@ const toggleOpen = () => {
               <button
                 type="button"
                 class="px-3 py-2 border border-gray-200 shadow-sm text-[#71839B] font-medium  text-sm rounded-lg hover:bg-[#4E76904D] hover:text-[#4E7690] "
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() => {if(currentPage!== totalPages){handlePageChange(currentPage + 1)}}}
               >
                 <span aria-hidden="true">Next</span>
               </button>

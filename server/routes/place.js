@@ -16,8 +16,8 @@ router.get('/fetchallplaces', async (req, res) => {
         places = places.filter(place => {
             const active = new Date(place.active);
             const timeDifference = Math.abs(currentDate - active);
-            const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-            return ((place.active.getTime() !== place.createdAt.getTime()) && hoursDifference > 5);
+            const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            return ((place.active.getTime() !== place.createdAt.getTime()) && daysDifference > 5);
         });
 
         // Delete filtered places

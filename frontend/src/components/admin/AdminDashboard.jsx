@@ -8,21 +8,37 @@ import {BsDash} from "react-icons/bs"
 import axios from "axios";
 import { toast } from "react-toastify";
 import AddLocationPopup from "./AddLocationPopup";
+import { LuMinusSquare } from "react-icons/lu";
 import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
 import { useLocation } from "react-router-dom";
 
-function AdminDashboard() {
-  const [selectedRows, setSelectedRows] = useState([]);
+
+
+function AdminDashboard({isLoading, data, setIsLoading, fetchData}) {
   const [processedData, setProcessedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState();
+
   const [queryedData, setQueryedData] = useState([]);
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
   const [query, setQuery] = useState("");
   const [sortedOrder,setSortedOrder] = useState("asc-name");
+   const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleSelect = (rowIndex) => {
+    setSelectedRows((prevSelected) => {
+      if (prevSelected.includes(rowIndex)) {
+        return prevSelected.filter((index) => index !== rowIndex);
+      } else {
+        return [...prevSelected, rowIndex];
+      }
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedRows([]);
+  };
 
   const location = useLocation();
 
@@ -45,17 +61,7 @@ function AdminDashboard() {
 
   //This one fetches the data from the API
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const items = await axios.get(
-          "https://safety-features.onrender.com/api/place/fetchAllPlaces"
-        );
-        setData(items?.data);
-        setIsLoading(false);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    };
+    
     fetchData();
   }, []);
 
@@ -152,6 +158,7 @@ useEffect(() => {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = queryedData?.slice(indexOfFirstRow, indexOfLastRow);
   const totalRows = queryedData?.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -159,6 +166,21 @@ useEffect(() => {
   };
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const archiveSelectedRows = async () => {
+    setIsLoading(true);
+    try {
+
+      // const selectedRowIds = selectedRows.map(row => row._id);
+      const promises = selectedRows.map(id => axios.put(`https://safety-features.onrender.com/api/place/archiveplace/${id}`));
+      await Promise.all(promises);
+      fetchData();
+      // Handle success
+    } catch (error) {
+      // Handle error
+      toast.error(error.message);
+    }
   };
 
   if (isLoading) {
@@ -180,17 +202,23 @@ useEffect(() => {
                   Safety Locations that are live on website
                 </p>
               </div>
-              <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center ">
+              <div className=" rounded-lg text-white bg-[#4E7690] py-3 px-2 items-center hover:cursor-pointer "
+                          onClick={toggleOpen}>
                 <button
                   className="flex justify-center items-center  w-full gap-2"
-                  onClick={toggleOpen}
+      
                 >
                   <FaPlus />
                   <p className="text-[14px]">Add Location</p>
                 </button>
               </div>
-              <AddLocationPopup open={open} setOpen={setOpen} />
-            </div>
+              </div>
+              {open &&               <div className="">
+              <AddLocationPopup open={open} setOpen={setOpen} fetchData={fetchData} />
+              </div>}
+
+              
+       
             {(!isLoading && processedData?.length === 0) ? <>
               <div className="flex flex-col justify-center items-center h-[60vh]">
         <h1 className="text-2xl font-semibold mb-2">No Data Found</h1>
@@ -244,7 +272,7 @@ useEffect(() => {
                     <img src="/filter-lines.svg" alt="filter" />
                     Filter
                   </button>
-                  <button className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
+                  <button onClick={archiveSelectedRows} className="text-[#F44336] py-3 pl-3 pr-4  flex justify-center items-center text-sm font-medium gap-2 rounded-lg bg-[#FDEBEA]">
                     <AiOutlineDelete className=" w-5 h-5" />
                     Delete
                   </button>
@@ -255,64 +283,54 @@ useEffect(() => {
                   <thead class="bg-[#FCFCFD] ">
                     <tr>
                       <th scope="col" class="py-3 px-4 pe-0">
-                        <div class="flex items-center h-5">
-                          <input
-                            id="hs-table-pagination-checkbox-all"
-                            type="checkbox"
-                            class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
-                          />
-                          <label
-                            for="hs-table-pagination-checkbox-all"
-                            class="sr-only"
-                          >
-                            Checkbox
-                          </label>
+                        <div class="flex items-center  w-5 h-5 hover:cursor-pointer" onClick={clearSelection}>
+                          <LuMinusSquare className="text-[#4E7690] w-5 h-5" />
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-name"?setSortedOrder("desc-name"):setSortedOrder("asc-name")}>
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-name"?setSortedOrder("desc-name"):setSortedOrder("asc-name")}>
                           Location Name
-                          {sortedOrder === "asc-name" ? <FaArrowDown className="mt-0.5"/> :(sortedOrder==="desc-name")?
-                          <FaArrowUp className="mt-0.5"/>:<BsDash className="mt-0.5"/>}
+                          {sortedOrder !== "desc-name" ? <FaArrowDown className="mt-0.5"/> :
+                          <FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 hover:cursor-pointer " onClick={()=>sortedOrder==="asc-city"?setSortedOrder("desc-city"):setSortedOrder("asc-city")}>
+                        <div className="flex gap-2 hover:cursor-pointer " onClick={()=>sortedOrder!=="desc-city"?setSortedOrder("desc-city"):setSortedOrder("asc-city")}>
                           City
-                          {sortedOrder==="asc-city"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-city"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
+                          {sortedOrder!=="desc-city"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-distance"?setSortedOrder("desc-distance"):setSortedOrder("asc-distance")} >
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-distance"?setSortedOrder("desc-distance"):setSortedOrder("asc-distance")} >
                           Distance
-                          {sortedOrder==="asc-distance"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-distance"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
+                          {sortedOrder!=="desc-distance"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-status"?setSortedOrder("desc-status"):setSortedOrder("asc-status")}>
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-status"?setSortedOrder("desc-status"):setSortedOrder("asc-status")}>
                           Status
-                          {sortedOrder==="asc-status"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-status"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
+                          {sortedOrder!=="desc-status"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       <th
                         scope="col"
                         class="px-6 py-3 text-start text-xs font-medium text-[#4E7690]  "
                       >
-                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder==="asc-time"?setSortedOrder("desc-time"):setSortedOrder("asc-time")}>
+                        <div className="flex gap-2 hover:cursor-pointer" onClick={()=>sortedOrder!=="desc-time"?setSortedOrder("desc-time"):setSortedOrder("asc-time")}>
                           Time Left
-                          {sortedOrder==="asc-time"?<FaArrowDown className="mt=0.5"/>:sortedOrder==="desc-time"?<FaArrowUp className="mt=0.5"/>:<BsDash className="mt-0.5"/>}
+                          {sortedOrder!=="desc-time"?<FaArrowDown className="mt-0.5"/>:<FaArrowUp className="mt-0.5"/>}
                         </div>
                       </th>
                       {linkstart === '/superadmin' && 
@@ -322,7 +340,6 @@ useEffect(() => {
                       >
                         <div className="flex gap-2">
                           Access
-                          <FaArrowDown className="mt=0.5"/>
                         </div>
                       </th>}
 
@@ -336,13 +353,17 @@ useEffect(() => {
                   </thead>
                   <tbody class="divide-y divide-gray-200 ">
                     {currentRows?.map((row, index) => (
+
                       <tr key={index}>
+                                              {console.log(row)}
                         <td class="py-3 ps-4">
                           <div class="flex items-center h-5">
                             <input
                               id="hs-table-pagination-checkbox-1"
                               type="checkbox"
-                              class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 "
+                              class="custom-checkbox "
+                              checked={selectedRows.includes(row._id)}
+                              onChange={() => handleSelect(row._id)}
                             />
                             <label
                               for="hs-table-pagination-checkbox-1"
@@ -398,16 +419,14 @@ useEffect(() => {
               <div class="py-2 px-4 flex items-center justify-between">
                 <div className=" text-sm text-[#4E7690] font-medium">
                   <h1>
-                    {indexOfFirstRow + 1} -
-                    {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of
-                    {totalRows} items
+                    {indexOfFirstRow + 1} - {totalRows < indexOfLastRow ? totalRows : indexOfLastRow} of {totalRows} items
                   </h1>
                 </div>
                 <nav class="flex items-center space-x-1 gap-2">
                   <button
                     type="button"
                     class="px-3 py-2 rounded-lg border border-gray-200 shadow-sm text-[#71839B] font-medium text-sm hover:bg-[#4E76904D] hover:text-[#4E7690]"
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={() => { if(currentPage !== 1) {handlePageChange(currentPage - 1)}}}
                   >
                     <span aria-hidden="true">Previous</span>
                     <span class="sr-only">Previous</span>
@@ -416,7 +435,7 @@ useEffect(() => {
                   <button
                     type="button"
                     class="px-3 py-2 border border-gray-200 shadow-sm text-[#71839B] font-medium  text-sm rounded-lg hover:bg-[#4E76904D] hover:text-[#4E7690] "
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={() => { if(currentPage !== totalPages) {handlePageChange(currentPage + 1)}}}
                   >
                     <span aria-hidden="true">Next</span>
                   </button>
