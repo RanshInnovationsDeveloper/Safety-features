@@ -14,6 +14,7 @@ import {
   calculateDistance,
 } from "../../commonly used functions/functions";
 import { useLocation } from "react-router-dom";
+import Spinner from "../Spinner";
 
 
 
@@ -184,7 +185,7 @@ useEffect(() => {
   };
 
   if (isLoading) {
-    return <h1> Loading...</h1>;
+    return <h1> <Spinner/></h1>;
   }
 
   return (

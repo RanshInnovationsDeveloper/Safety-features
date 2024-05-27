@@ -13,6 +13,7 @@ import {
 } from "../../commonly used functions/functions";
 import "../styles/User.css";
 import { LuMinusSquare } from "react-icons/lu";
+import Spinner from "../Spinner";
 
 function AdminDelete() {
   const [processedData, setProcessedData] = useState([]);
@@ -226,7 +227,7 @@ const toggleOpen = () => {
   // };
 
   if (isLoading) {
-    return <h1> Loading...</h1>;
+    return <h1> <Spinner/></h1>;
   }
 
 

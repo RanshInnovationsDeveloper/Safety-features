@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "@chakra-ui/react";
 
 
 export default function SuperAdminLoginPage() {
@@ -10,8 +11,10 @@ export default function SuperAdminLoginPage() {
   let navigate = useNavigate();
 
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);  
 
   const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       navigate(`/superadmin-dashboard`);
@@ -19,6 +22,7 @@ export default function SuperAdminLoginPage() {
   }, []);
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     const response = await fetch(
       "https://safety-features.onrender.com/api/admin/login",
@@ -39,7 +43,8 @@ export default function SuperAdminLoginPage() {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
       localStorage.setItem("role", "superadmin");
-      console.log(localStorage.getItem("role"))
+
+      setIsLoading(false);
       navigate(`/superadmin-dashboard`); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
@@ -55,6 +60,8 @@ export default function SuperAdminLoginPage() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     console.log(credentials);
   };
+
+  if(isLoading) return (<div><Spinner/></div>);
 
   return (
     <div className="flex flex-row justify-center items-center h-screen">

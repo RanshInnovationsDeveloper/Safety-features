@@ -11,6 +11,7 @@ import {
   calculateExpiration,
   calculateDistance,
 } from "../../commonly used functions/functions";
+import Spinner from "../Spinner";
 
 function AdminArchive() {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -112,7 +113,7 @@ function AdminArchive() {
   };
 
   if (isLoading) {
-    return <h1> Loading...</h1>;
+    return <h1> <Spinner/></h1>;
   }
 
 

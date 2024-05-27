@@ -31,13 +31,11 @@ const SuperAdminDashboardPage=()=>{
 
  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 console.log(linkstart)
-    useEffect(  ()=>{
-
-        if(!localStorage.getItem('token')){
-            navigate(`${linkstart}-login`)
-          } 
-
-      },[localStorage.getItem('token')]);
+    useEffect(() => {
+      if (!localStorage.getItem('token')) {
+        navigate(`superadmin-login`);
+      }
+    }, [localStorage.getItem('token'), navigate]);
 
     return (
       <div className='relative'>

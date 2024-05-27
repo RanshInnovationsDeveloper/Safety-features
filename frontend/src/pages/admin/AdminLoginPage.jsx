@@ -3,9 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Spinner from "../../components/Spinner";
 export default function AdminLoginPage() {
   const [credentials, setCredentials] = useState({ userid: "", password: "" });
   let navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const location = useLocation();
 
@@ -17,6 +19,7 @@ export default function AdminLoginPage() {
   }, []);
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     const response = await fetch(
       "https://safety-features.onrender.com/api/user/login",
@@ -37,6 +40,8 @@ export default function AdminLoginPage() {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
       localStorage.setItem("role", "admin");
+
+      setIsLoading(false);
       navigate(`/admin-dashboard`); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
@@ -52,6 +57,8 @@ export default function AdminLoginPage() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
     console.log(credentials);
   };
+
+  if(isLoading) return (<div><Spinner/></div>);
 
   return (
     <div className="flex flex-row justify-center items-center h-screen">
