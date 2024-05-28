@@ -61,7 +61,8 @@ export default function AdminLoginPage() {
     console.log(credentials);
   };
 
-  if(isLoading) return (<div><Spinner/></div>);
+  if(isLoading) {return (<div><Spinner/></div>)
+  };
 
   return (
     <div className="flex flex-row justify-center items-center h-screen">

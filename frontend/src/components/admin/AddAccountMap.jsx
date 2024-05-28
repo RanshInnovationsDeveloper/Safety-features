@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
   
   // let dest
   // let center = { lat: 29.6857, lng: 76.9905 }
-  function AddLocationMap({style,setCity,setPincode,setState,setCountry,setCoordinates,setName,setAddress}) {
+  function AddAccountMap({style,setCity,setPincode,setState,setCountry,setCoordinates,setName,setAddress}) {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
         libraries: ['places'],
@@ -32,7 +32,7 @@ import { toast } from 'react-toastify';
     const { places, addPlace, deletePlace, editPlace, getPlaces,getCoordinates, userCoordinates } = useContext(pageContext);
     const [map, setMap] = useState(/** @type google.maps.Map */(null))
     const [directionsResponse, setDirectionsResponse] = useState(null)
-    const [center, setCenter] = useState({ lat: 28.964710, lng: 76.295952 });
+    const [center, setCenter] = useState({ lat: 28.964710, lng:76.295952 });
     // const [name, setName] = useState('');
     // const [address, setAddress] = useState('');
     // const [coordinates, setCoordinates] = useState('');
@@ -53,16 +53,16 @@ import { toast } from 'react-toastify';
       getCoordinates();
     }, []);
   
-    useEffect(() => {
-      if (userCoordinates && userCoordinates.coordinates && userCoordinates.coordinates.length > 0) {
-          console.log(userCoordinates);
-          console.log( userCoordinates.userId.userid);
-          const [lat, lng] = userCoordinates.coordinates[0]; // Extract lat and lng from the array
-          if (lat && lng) {
-              setCenter({ lat, lng });
-          }
-      }
-  }, [userCoordinates]);
+//     useEffect(() => {
+//       if (userCoordinates && userCoordinates.coordinates && userCoordinates.coordinates.length > 0) {
+//           console.log(userCoordinates);
+//           console.log( userCoordinates.userId.userid);
+//           const [lat, lng] = userCoordinates.coordinates[0]; // Extract lat and lng from the array
+//           if (lat && lng) {
+//               setCenter({ lat, lng });
+//           }
+//       }
+//   }, [userCoordinates]);
   
   // We can give access of location by either area defined in google maps/ or by defining radius and location as centre point or combination of both; it should be defined after getting inputs by police officials.
     const maxDistance = 7;
@@ -266,5 +266,5 @@ import { toast } from 'react-toastify';
     )
   }
   
-  export default AddLocationMap
+  export default AddAccountMap
   

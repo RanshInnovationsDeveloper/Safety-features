@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import AddLocationMap from "./AddLocationMap";
 import { useAccordionItemState } from "@chakra-ui/react";
+import AddAccountMap from "./AddAccountMap";
 const CreateNewAccount = ({ open, setOpen }) => {
   // const [position, setPosition] = useState({ lat: null, lng: null });
   const [nestedOpen, setNestedOpen] = useState(false);
@@ -180,7 +181,7 @@ const CreateNewAccount = ({ open, setOpen }) => {
 
             {currPage === 1 && (
               <div className="flex-1">
-                <AddLocationMap
+                <AddAccountMap
                   style={{ height: "100%", width: "100%" }} //This is going ot main div of the map
                   setCity={setCity}
                   setPincode={setPincode}
