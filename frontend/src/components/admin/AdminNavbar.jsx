@@ -5,7 +5,6 @@ import {
   IoSettingsOutline,
 } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
-
 import React from "react";
 import { FaAngleLeft } from "react-icons/fa6";
 import { IoSearchOutline } from "react-icons/io5";
@@ -13,7 +12,7 @@ import { PiBellLight } from "react-icons/pi";
 import { useState } from "react";
 import { FaRegMoon } from "react-icons/fa";
 import { Toggle } from "react-toggle-component";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AdminNavbar() {
   const [copied, setCopied] = useState(false);
@@ -21,6 +20,9 @@ function AdminNavbar() {
   const [isDarkMode, setIsDarkMode] = useState(false); //TODO:Temp Arrangement Later tak eit from contex
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf("-"));
 
   const copyToClipboard = (text) => {
     navigator.clipboard
@@ -31,11 +33,12 @@ function AdminNavbar() {
       })
       .catch((err) => console.error("Failed to copy:", err));
   };
+  
   //Logout Function
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    navigate("/admin-login");
+    navigate(`${linkstart}-login`);
   };
   return (
     <header className="fixed top-0 flex justify-between items-center h-[4rem] z-10 mt-2 w-full ">

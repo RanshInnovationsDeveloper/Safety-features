@@ -43,13 +43,13 @@ export default function SuperAdminLoginPage() {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
       localStorage.setItem("role", "superadmin");
+     
 
       setIsLoading(false);
-      navigate(`/superadmin-dashboard`); //this is redirecting me to the home page after I login
+      navigate("/superadmin-dashboard"); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
     } else {
-      console.log("Invalid Credentials", "danger");
       toast.error("Failed to Login, Invalid Credentials");
     }
   };
@@ -61,16 +61,19 @@ export default function SuperAdminLoginPage() {
     console.log(credentials);
   };
 
-  if(isLoading) return (<div><Spinner/></div>);
+  if(isLoading) {
+    return <Spinner/>
+  }
+  
 
   return (
     <div className="flex flex-row justify-center items-center h-screen">
       <div className="w-[60%] flex flex-row justify-center ">
         <div className=" flex flex-col w-[32rem] justify-evenly h-[40rem] items-center border-2 border-[#DADADA] rounded-3xl ">
           <div className="flex flex-col justify-center items-center w-[32rem] h-[90%]">
-            <h1 className="text-2xl font-semibold mb-2">Login</h1>
+            <h1 className="text-2xl font-semibold mb-2">Super Admin Login</h1>
             <p className="text-[#4E7690] mb-14 font-normal text-md">
-              Enter the details as per given by higher authorities
+              Enter the details below to login
             </p>
             <form onSubmit={handleSubmit} className="w-full px-10 ">
               <div className="flex flex-col justify-center w-full  gap-2 mb-4">
@@ -99,17 +102,7 @@ export default function SuperAdminLoginPage() {
                   onChange={onChange}
                 />
               </div>
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-row justify-center items-center gap-3">
-                  <div className="border-2 border-gray-300 rounded w-5 h-5 flex flex-row justify-center items-center">
-                    <input
-                      type="checkbox"
-                      className="w-3 h-3  appearance-none  checked:bg-[#4E7690] "
-                    />
-                  </div>
-
-                  <p className="text-sm">Keep me logged In</p>
-                </div>
+              <div className="flex flex-row justify-end items-center">
                 <p className="text-sm text-[#4E7690] underline font-medium">
                   Forgot Password
                 </p>

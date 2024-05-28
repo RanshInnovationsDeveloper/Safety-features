@@ -3,18 +3,21 @@ import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Spinner from "../../components/Spinner";
-export default function AdminLoginPage() {
-  const [credentials, setCredentials] = useState({ userid: "", password: "" });
+import { Spinner } from "@chakra-ui/react";
+
+
+export default function SuperAdminRegisterPage() {
+  const [credentials, setCredentials] = useState({name: "", username: "", password: "" });
   let navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);  
 
   const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      navigate(`/admin-dashboard`);
+      navigate(`/superadmin-dashboard`);
     }
   }, []);
 
@@ -22,14 +25,15 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     e.preventDefault();
     const response = await fetch(
-      "https://safety-features.onrender.com/api/user/login",
+      "https://safety-features.onrender.com/api/admin/register",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userid: credentials.userid,
+            name: credentials.name,
+          username: credentials.username,
           password: credentials.password,
         }),
       }
@@ -38,15 +42,11 @@ export default function AdminLoginPage() {
     // console.log(json);
     if (json.success) {
       // Save the auth token and redirect
-      localStorage.setItem("token", json.authtoken);
-      localStorage.setItem("role", "admin");
-
       setIsLoading(false);
-      navigate(`/admin-dashboard`); //this is redirecting me to the home page after I login
+      navigate("/superadmin-login"); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
-      toast.success("Logged In Successfully");
+      toast.success("User Registered Successfully");
     } else {
-      console.log("Invalid Credentials", "danger");
       toast.error("Failed to Login, Invalid Credentials");
     }
   };
@@ -65,21 +65,34 @@ export default function AdminLoginPage() {
       <div className="w-[60%] flex flex-row justify-center ">
         <div className=" flex flex-col w-[32rem] justify-evenly h-[40rem] items-center border-2 border-[#DADADA] rounded-3xl ">
           <div className="flex flex-col justify-center items-center w-[32rem] h-[90%]">
-            <h1 className="text-2xl font-semibold mb-2">Login</h1>
+            <h1 className="text-2xl font-semibold mb-2">Register</h1>
             <p className="text-[#4E7690] mb-14 font-normal text-md">
-              Enter the details as per given by higher authorities
+              Create an account by entering the following details
             </p>
             <form onSubmit={handleSubmit} className="w-full px-10 ">
-              <div className="flex flex-col justify-center w-full  gap-2 mb-4">
-                <label className="text-[#4E7690]">ID (Required)</label>
+            <div className="flex flex-col justify-center w-full  gap-2 mb-4">
+                <label className="text-[#4E7690]">User Name (Required)</label>
                 <input
                   type="text"
                   id="ID"
-                  name="userid"
+                  name="name"
+                  className="border w-full rounded-lg h-[2.75rem] px-3 placeholder:text-[#D9D9D9] placeholder:text-lg "
+                  placeholder="User Name"
+                  required
+                  // value={credentials.username}
+                  onChange={onChange}
+                />
+              </div>
+              <div className="flex flex-col justify-center w-full  gap-2 mb-4">
+                <label className="text-[#4E7690]">User ID (Required)</label>
+                <input
+                  type="text"
+                  id="ID"
+                  name="username"
                   className="border w-full rounded-lg h-[2.75rem] px-3 placeholder:text-[#D9D9D9] placeholder:text-lg "
                   placeholder="User Id"
                   required
-                  // value={credentials.userid}
+                  // value={credentials.username}
                   onChange={onChange}
                 />
               </div>
@@ -96,17 +109,30 @@ export default function AdminLoginPage() {
                   onChange={onChange}
                 />
               </div>
+              <div className="flex flex-col justify-center w-full gap-2 mb-2">
+                <label className="text-[#4E7690]">Confirm Password (Required)</label>
+                <input
+                  type="password"
+                  id="confirmpassword"
+                  name="confirmpassword"
+                  required
+                  className="border w-full rounded-lg h-[2.75rem] px-3 placeholder:text-[#D9D9D9] placeholder:text-lg "
+                  // value={credentials.password}
+                  placeholder="Confirm Password"
+                  onChange={onChange}
+                />
+              </div>
               <div className="flex flex-row justify-end items-center">
                 <p className="text-sm text-[#4E7690] underline font-medium">
                   Forgot Password
                 </p>
               </div>
-              <div className=" flex flex-row justify-center items-center mt-10">
+              <div className=" flex flex-row justify-center items-center mt-6">
                 <button
                   type="submit"
                   className="text-white bg-[#4E7690] px-10 py-3 rounded-lg"
                 >
-                  Login
+                  Register
                 </button>
               </div>
             </form>

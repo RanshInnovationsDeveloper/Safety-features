@@ -21,6 +21,7 @@ import SuperAdminArchivePage from "./pages/superadmin/SuperAdminArchivePage.jsx"
 import SuperAdminEditHistoryPage from "./pages/superadmin/SuperAdminEditHistoryPage.jsx";
 import SuperAdminDeleteLocationPage from "./pages/superadmin/SuperAdminDeleteLocationPage.jsx";
 import CryptoJS from 'crypto-js';
+import SuperAdminRegisterPage from "./pages/superadmin/SuperAdminRegisterPage.jsx";
 
 
 
@@ -41,6 +42,7 @@ console.log(isSuperAdmin);
           <Route path="/" element={<Homepage />} />
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/superadmin-login" element={<SuperAdminLoginPage />} />
+          <Route path="/superadmin-register" element={<SuperAdminRegisterPage />} />
           <Route path="/admin-dashboard" 
           element={<AdminRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin} element={Admin} /> }/>
           <Route path="/admin-location" element={<AdminRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin} element={AdminLocationPage} />} />
