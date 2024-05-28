@@ -3,21 +3,21 @@ import { useNavigate, useLocation } from "react-router-dom";
 import image1 from "../../images/police.jpg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Spinner from "../../components/Spinner";
-export default function AdminLoginPage() {
-  const [credentials, setCredentials] = useState({ userid: "", password: "" });
+import { Spinner } from "@chakra-ui/react";
+
+
+export default function SuperAdminLoginPage() {
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   let navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);  
 
-  const linkstart = location.pathname.substring(
-    0,
-    location.pathname.indexOf("-")
-  );
+  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      navigate(`/admin-dashboard`);
+      navigate(`/superadmin-dashboard`);
     }
   }, []);
 
@@ -25,14 +25,14 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     e.preventDefault();
     const response = await fetch(
-      "https://safety-features.onrender.com/api/user/login",
+      "https://safety-features.onrender.com/api/admin/login",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userid: credentials.userid,
+          username: credentials.username,
           password: credentials.password,
         }),
       }
@@ -42,14 +42,14 @@ export default function AdminLoginPage() {
     if (json.success) {
       // Save the auth token and redirect
       localStorage.setItem("token", json.authtoken);
-      localStorage.setItem("role", "admin");
+      localStorage.setItem("role", "superadmin");
+     
 
       setIsLoading(false);
-      navigate(`/admin-dashboard`); //this is redirecting me to the home page after I login
+      navigate("/superadmin-dashboard"); //this is redirecting me to the home page after I login
       // console.log("Logged In SUCCESSFULLY", "success");
       toast.success("Logged In Successfully");
     } else {
-      console.log("Invalid Credentials", "danger");
       toast.error("Failed to Login, Invalid Credentials");
     }
   };
@@ -61,16 +61,19 @@ export default function AdminLoginPage() {
     console.log(credentials);
   };
 
-  if(isLoading) return (<div><Spinner/></div>);
+  if(isLoading) {
+    return <Spinner/>
+  }
+  
 
   return (
     <div className="flex flex-row justify-center items-center h-screen">
       <div className="w-[60%] flex flex-row justify-center ">
         <div className=" flex flex-col w-[32rem] justify-evenly h-[40rem] items-center border-2 border-[#DADADA] rounded-3xl ">
           <div className="flex flex-col justify-center items-center w-[32rem] h-[90%]">
-            <h1 className="text-2xl font-semibold mb-2">Login</h1>
+            <h1 className="text-2xl font-semibold mb-2">Super Admin Login</h1>
             <p className="text-[#4E7690] mb-14 font-normal text-md">
-              Enter the details as per given by higher authorities
+              Enter the details below to login
             </p>
             <form onSubmit={handleSubmit} className="w-full px-10 ">
               <div className="flex flex-col justify-center w-full  gap-2 mb-4">
@@ -78,11 +81,11 @@ export default function AdminLoginPage() {
                 <input
                   type="text"
                   id="ID"
-                  name="userid"
+                  name="username"
                   className="border w-full rounded-lg h-[2.75rem] px-3 placeholder:text-[#D9D9D9] placeholder:text-lg "
                   placeholder="User Id"
                   required
-                  // value={credentials.userid}
+                  // value={credentials.username}
                   onChange={onChange}
                 />
               </div>

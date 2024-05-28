@@ -2,3 +2,34 @@
 @tailwind components;
 @tailwind utilities;
  
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+   /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+  }
+}
+
+.spinner {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    animation: rotate 1.2s linear infinite;
+    border: 8px solid #34468A;
+    border-radius: 50%;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+  }
+  
+  
+  
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

@@ -5,13 +5,13 @@ import AdminNavbar from "../../components/admin/AdminNavbar"
 import AdminSidebar from "../../components/admin/AdminSidebar"
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const AdminAccessPage=()=>{
+const SuperAdminAccessPage=()=>{
  const navigate = useNavigate();
 
     useEffect(  ()=>{
 
         if(!localStorage.getItem('token')){
-            navigate("/admin/login")
+            navigate("/superadmin-login")
           } 
 
       },[localStorage.getItem('token')]);
@@ -38,4 +38,4 @@ const AdminAccessPage=()=>{
     )
 }
 
-export default AdminAccessPage
+export default SuperAdminAccessPage

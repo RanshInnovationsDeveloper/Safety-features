@@ -1,155 +1,13 @@
-// // import React, { useState } from 'react';
-// // import { Modal, Button } from '@material-ui/core';
 
-// // const AddLocationPopup = () => {
-// //     const [open, setOpen] = useState(false);
-// //     const [nestedOpen, setNestedOpen] = useState(false);
-// //     const [doubleNestedOpen, setDoubleNestedOpen] = useState(false);
-
-// //     const handleOpen = () => {
-// //         setOpen(true);
-// //     };
-
-// //     const handleClose = () => {
-// //         setOpen(false);
-// //     };
-
-// //     const handleNestedOpen = () => {
-// //         setNestedOpen(true);
-// //     };
-
-// //     const handleNestedClose = () => {
-// //         setNestedOpen(false);
-// //     };
-
-// //     const handleDoubleNestedOpen = () => {
-// //         setDoubleNestedOpen(true);
-// //     };
-
-// //     const handleDoubleNestedClose = () => {
-// //         setDoubleNestedOpen(false);
-// //     };
-
-// //     return (
-// //         <div>
-// //             <Button variant="contained" color="primary" onClick={handleOpen}>
-// //                 Open Modal
-// //             </Button>
-
-// //             <Modal open={open} onClose={handleClose}>
-// //                 <div>
-// //                     <h2>Outer Modal</h2>
-// //                     <Button variant="contained" color="primary" onClick={handleNestedOpen}>
-// //                         Open Nested Modal
-// //                     </Button>
-
-// //                     <Modal open={nestedOpen} onClose={handleNestedClose}>
-// //                         <div>
-// //                             <h2>Nested Modal</h2>
-// //                             <Button variant="contained" color="primary" onClick={handleDoubleNestedOpen}>
-// //                                 Open Double Nested Modal
-// //                             </Button>
-
-// //                             <Modal open={doubleNestedOpen} onClose={handleDoubleNestedClose}>
-// //                                 <div>
-// //                                     <h2>Double Nested Modal</h2>
-// //                                     <p>This is the content of the double nested modal.</p>
-// //                                 </div>
-// //                             </Modal>
-// //                         </div>
-// //                     </Modal>
-// //                 </div>
-// //             </Modal>
-// //         </div>
-// //     );
-// // };
-
-// // export default AddLocationPopup;
-
-// import React, { useState } from 'react';
-
-// const AddLocationPopup = ({name}) => {
-//     const [open, setOpen] = useState(false);
-//     const [nestedOpen, setNestedOpen] = useState(false);
-//     const [doubleNestedOpen, setDoubleNestedOpen] = useState(false);
-
-//     const handleOpen = () => {
-//         setOpen(true);
-//     };
-
-//     const handleClose = () => {
-//         setOpen(false);
-//     };
-
-//     const handleNestedOpen = () => {
-//         setNestedOpen(true);
-//     };
-
-//     const handleNestedClose = () => {
-//         setNestedOpen(false);
-//     };
-
-//     const handleDoubleNestedOpen = () => {
-//         setDoubleNestedOpen(true);
-//     };
-
-//     const handleDoubleNestedClose = () => {
-//         setDoubleNestedOpen(false);
-//     };
-
-//     return (
-//         <div>
-//             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleOpen}>
-
-//                 {name}
-//             </button>
-
-//             {open && (
-//                 <div className="fixed inset-0 flex items-center justify-center">
-//                     <div className="bg-white p-8 rounded shadow-lg">
-//                         <h2 className="text-2xl mb-4">Outer Modal</h2>
-//                         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleNestedOpen}>
-//                             Open Nested Modal
-//                         </button>
-
-//                         {nestedOpen && (
-//                             <div className="fixed inset-0 flex items-center justify-center">
-//                                 <div className="bg-white p-8 rounded shadow-lg">
-//                                     <h2 className="text-2xl mb-4">Nested Modal</h2>
-//                                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleDoubleNestedOpen}>
-//                                         Open Double Nested Modal
-//                                     </button>
-
-//                                     {doubleNestedOpen && (
-//                                         <div className="fixed inset-0 flex items-center justify-center">
-//                                             <div className="bg-white p-8 rounded shadow-lg">
-//                                                 <h2 className="text-2xl mb-4">Double Nested Modal</h2>
-//                                                 <p>This is the content of the double nested modal.</p>
-//                                                 <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleDoubleNestedClose}>
-//                                                     Close Double Nested Modal
-//                                                 </button>
-//                                             </div>
-//                                         </div>
-//                                     )}
-//                                 </div>
-//                             </div>
-//                         )}
-//                     </div>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default AddLocationPopup;
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import AddLocationMap from "./AddLocationMap";
-const AddLocationPopup = ({ open, setOpen }) => {
+import { IoCloseCircleSharp, IoSearchCircleSharp } from "react-icons/io5";
+import "../styles/User.css";
+const AddLocationPopup = ({ open, setOpen, fetchData }) => {
   // const [position, setPosition] = useState({ lat: null, lng: null });
-  const [nestedOpen, setNestedOpen] = useState(false);
-  const [doubleNestedOpen, setDoubleNestedOpen] = useState(false);
+
   const [currPage, setCurrPage] = useState(1);
   const [options, setOptions] = useState({
     temporary: false,
@@ -166,35 +24,6 @@ const AddLocationPopup = ({ open, setOpen }) => {
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
   const author=(localStorage.getItem("token")); 
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition((position) => {
-  //       setPosition({
-  //         lat: position?.coords?.latitude,
-  //         lng: position?.coords?.longitude,
-  //       });
-  //     });
-  //   } else {
-  //     console.log("Geolocation is not supported by this browser.");
-  //     toast.error("Geolocation is not supported by this browser.");
-  //   }
-  // }, []);
-
-  //   const handleNestedOpen = () => {
-  //     setNestedOpen(true);
-  //   };
-
-  //   const handleNestedClose = () => {
-  //     setNestedOpen(false);
-  //   };
-
-  //   const handleDoubleNestedOpen = () => {
-  //     setDoubleNestedOpen(true);
-  //   };
-
-  //   const handleDoubleNestedClose = () => {
-  //     setDoubleNestedOpen(false);
-  //   };
 
   const handleBack = () => {
     if (currPage > 1) {
@@ -263,65 +92,35 @@ const AddLocationPopup = ({ open, setOpen }) => {
   };
 
   return (
-    <div className="fixed z-20">
+    <div className="fixed z-30">
       {open && (
         <div className="fixed inset-0 flex items-center justify-center z-20">
-          <div className="bg-white p-6 rounded shadow-lg w-[50vw] h-[80vh] flex flex-col overflow-hidden">
+          <div className="absolute inset-0 bg-gray-500 z-10 opacity-40"></div>
+          <div className="bg-white py-6 px-10 rounded-[30px] shadow-lg w-[40rem] h-[35rem] z-20 flex flex-col justify-between items-center gap-8 ">
           {currPage === 1 && (
-  <div className="flex flex-row gap-30">
-    <div className="overflow-y-auto max-h-[calc(100vh-2rem)]">
-      <h2 className="text-2xl mb-4 text-black">Add Location</h2>
-      <p className="text-[#4e7690] font-size-[14px] ">
-        Fill all the details given below to add the location
-      </p>
-      <h2>Details</h2>
-      <p className="text-[#4e7690]">
-        Note:Fields are editable and can be changed
-      </p>
-                  {/* //Scroll waala part */}
-                  <div className="flex space-x-4">
-    <div className="space-y-2 flex-1">
-      <label htmlFor="placename" className="block text-gray-700">Place Name (required)</label>
-      <input name="placename" type="text" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Eg:Police Station" className="w-full p-2 border border-gray-300 rounded"/>
-    </div>
-    <div className="space-y-2 flex-1">
-      <label htmlFor="category" className="block text-gray-700">Category (required)</label>
-      <select name="category" className="w-full p-2 border border-gray-300 rounded" value={category} onChange={(e)=>setCategory(e.target.value)}>
-        <option value="police-station">Police Station</option>
-        <option value="hospital">Hospital</option>
-      </select>
-    </div>
-  </div>
-  <label htmlFor="address" className="block text-gray-700">Address(required)</label>
-  <input name="address" type="text" value={address} onChange={(e)=>setAddress(e.target.value)} className="w-full p-2 border border-gray-300 rounded"/>
-  <div className="grid grid-cols-2 gap-4">
-    <div>
-      <label htmlFor="city"  className="block text-gray-700">City (required)</label>
-      <input name="city" type="text" onChange={(e)=>setCity(e.target.value)} value={city} placeholder="Eg: Jaipur" className="w-full p-2 border border-gray-300 rounded"/>
-      <label htmlFor="pincode" className="block text-gray-700">Pincode (required)</label>
-      <input name="pincode" type="text" onChange={(e)=>setPincode(e.target.value)} value={pincode} placeholder="Eg: Jaipur" className="w-full p-2 border border-gray-300 rounded"/>
-    </div>
-    <div>
-      <label htmlFor="state" className="block text-gray-700">State (required)</label>
-      <input name="state" type="text" onChange={(e)=>setState(e.target.value)} value={state} placeholder="Eg: Rajasthan" className="w-full p-2 border border-gray-300 rounded"/>
-      <label htmlFor="country" className="block text-gray-700">Country/Region(required)</label>
-      <input name="country" type="text" onChange={(e)=>setCountry(e.target.value)} value={country} placeholder="Eg: India" className="w-full p-2 border border-gray-300 rounded"/>
-    </div>
-  </div>
-                </div>
-                <button
-                  className="rounded-md text-[#4e7690]"
+  <div className="flex flex-col  w-[36rem] h-[85%]   ">
+        <div className="flex flex-row justify-between">
+      <h2 className=" text-lg font-semibold text-[#101828]">Add Location</h2>
+      <div className="rounded-full shadow-lg w-8 flex justify-center bg-[#4E7690] items-center h-8"
+         onClick={() => setOpen(false)}
+      >
+      <button
+                  className=" text-[#4e7690]"
                   onClick={() => setOpen(false)}
                 >
-                  X
+                  <IoCloseCircleSharp className="text-white w-10 h-10"/>
                 </button>
-              </div>
-            )}
-            
-              {currPage === 1 && (
-                <div className="flex-1">
+      </div>
+     
+      </div>
+      
+      <p className="text-[#4E7690] text-sm font-normal ">
+        Fill all the details given below to add the location
+      </p>
+    <div className="overflow-y-auto no-scrollbar">
+    <div className="mt-3 flex justify-center items-center">
                   <AddLocationMap
-                    style={{ height: "100%", width: "100%" }} //This is going ot main div of the map
+                    style={{ height: "20rem", width: "36rem" }} //This is going ot main div of the map
                     setCity={setCity}
                     setPincode={setPincode}
                     setState={setState}
@@ -329,24 +128,82 @@ const AddLocationPopup = ({ open, setOpen }) => {
                     setCoordinates={setCoordinates}
                     setName={setName}
                     setAddress={setAddress}
+                    className="border border-green-500"
                   />
 
                 </div>
-
-              )}
+      <h2 className="text-lg font-semibold text-[#101828]">Details</h2>
+      <p className="text-[#4E7690] text-sm font-normal ">
+        Note: Fields are editable and can be changed
+      </p>
+                  {/* //Scroll waala part */}
+                  <div className="flex space-x-4 mt-2">
+    <div className="space-y-2 flex-1 z-10 ">
+      <label htmlFor="placename" className="block text-[#4E7690] text-sm font-medium">Place Name (required)</label>
+      <input name="placename" type="text" value={name} onChange={(e)=>setName(e.target.value)} placeholder="Eg:Police Station" className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>
+    </div>
+    <div className="space-y-2 flex-1 z-10">
+      <label htmlFor="category" className="block text-[#4E7690] text-sm font-medium">Category (required)</label>
+      <div className="custom-select-wrapper">
+      <select name="category" className="w-full p-2 border custom-select border-[#D0D5DD] rounded-lg" value={category} onChange={(e)=>setCategory(e.target.value)}>
+        <option value="police-station">Police Station</option>
+        <option value="hospital">Hospital</option>
+      </select>
+      </div>
+      
+    </div>
+  </div>
+  <div className="mt-2">
+  <label htmlFor="address" className="block text-[#4E7690] text-sm font-medium">Address(required)</label>
+  <input name="address" type="text" value={address} onChange={(e)=>setAddress(e.target.value)} className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>
+  </div>
+  
+  <div className="grid grid-cols-2 gap-4 mt-2">
+    <div className="">
+      <label htmlFor="city"  className="block text-[#4E7690] text-sm font-medium">City (required)</label>
+      <input name="city" type="text" onChange={(e)=>setCity(e.target.value)} value={city} placeholder="Eg: Jaipur" className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>
+      <label htmlFor="state" className="block text-[#4E7690] text-sm font-medium mt-2">State (required)</label>
+      <input name="state" type="text" onChange={(e)=>setState(e.target.value)} value={state} placeholder="Eg: Rajasthan" className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>
+    </div>
+    <div className="">
+    <label htmlFor="pincode" className="block text-[#4E7690] text-sm font-medium ">Pincode (required)</label>
+      <input name="pincode" type="text" onChange={(e)=>setPincode(e.target.value)} value={pincode} placeholder="Eg: Jaipur" className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>     
+      <label htmlFor="country" className="block text-[#4E7690] text-sm font-medium mt-2">Country/Region(required)</label>
+      <input name="country" type="text" onChange={(e)=>setCountry(e.target.value)} value={country} placeholder="Eg: India" className="w-full p-2 border border-[#D0D5DD] rounded-lg"/>
+    </div>
+  </div>
+  
+                </div>
+              
+              </div>
+            )}
+            
 
             {currPage === 2 && (
               <div className="flex flex-col ">
                 <div className="flex flex-row justify-between items-start gap-30">
                   <div>
-                    <h2 className="text-2xl mb-4 text-black">Category</h2>
-                    <p className="text-[#4e7690] font-size-[14px] ">
+                    <div className="flex flex-row justify-between">
+                    <h2 className="text-lg font-semibold text-[#101828]">Category</h2>
+                    <div className="rounded-full shadow-lg w-8 flex justify-center bg-[#4E7690] items-center h-8">
+                    <button
+                  className=" text-[#4e7690]"
+                  onClick={() => setOpen(false)}
+                   >
+                  <IoCloseCircleSharp className="text-white w-10 h-10"/>
+                </button>
+                </div>
+                    </div>
+                    
+                    <p className="text-[#4E7690] text-sm font-normal  ">
                       Select time till how much you want ot see the location
                     </p>
-                    <div className="mt-4">
-                      <p>Select an option</p>
-                      <label>
-                        <input
+                    <div className="mt-8 gap-8 flex flex-col">
+                      <p className="text-[#4E7690] text-sm font-medium ">Select an option</p>
+                      <div className="flex flex-col gap-5">
+                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-row gap-2 ">
+                      <input
                           type="radio"
                           value="permanent"
                           checked={options?.permanent}
@@ -356,12 +213,15 @@ const AddLocationPopup = ({ open, setOpen }) => {
                               permanent: true,
                             })
                           }
+                          className="w-5 h-5 red-radio"
                         />
+                      <label className="text-sm font-medium text-[#101828]">
                         Permanent
                       </label>
-                      <br />
-                      <label>
-                        <input
+
+                      </div>
+                      <div className="flex flex-row gap-2">
+                      <input
                           type="radio"
                           value="temporary"
                           checked={options?.temporary}
@@ -371,13 +231,23 @@ const AddLocationPopup = ({ open, setOpen }) => {
                               permanent: false,
                             })
                           }
+                          className="w-5 h-5 red-radio"
                         />
+                      <label className="text-sm font-medium text-[#101828]">
                         Temporary
                       </label>
-                      <p>
+                      </div>
+                     
+                      </div>
+                      <p className=" font-medium text-sm text-[#6C6C6C]">
                         (Note : Temporary selection would be only visible till
                         the time that will be entered.)
                       </p>
+                      </div>
+
+                       
+                      
+               
                       <div
                         style={{
                           display: "flex",
@@ -387,27 +257,29 @@ const AddLocationPopup = ({ open, setOpen }) => {
                         }}
                       >
                         <div className="mr-4">
-                          <label htmlFor="days">Days</label>
+                          <label htmlFor="days" className="text-[#4E7690] text-sm font-medium disabled:cursor-not-allowed">Days (required)</label>
                           <input
                             type="number"
                             id="days"
                             name="days"
-                            className="border p-2 rounded"
+                            className="border border-[#D0D5DD] w-[16rem] p-2 h-[2.5rem] rounded-lg bg-transparent placeholder:text-[#D9D9D9] disabled:opacity-55 disabled:cursor-not-allowed"
                             placeholder="Eg: 2 days"
                             value={days}
+                            min={0}
                             onChange={(e) => setDays(e.target.value)}
                             disabled={options?.permanent}
                           />
                         </div>
-                        <div>
-                          <label htmlFor="hours">Hours</label>
+                        <div className="gap-2">
+                          <label htmlFor="hours" className="text-[#4E7690] text-sm font-medium disabled:cursor-not-allowed">Hours</label>
                           <input
                             type="number"
                             id="hours"
                             name="hours"
-                            className="border p-2 rounded"
+                            className="border border-[#D0D5DD] p-2 rounded-lg w-[16rem] h-[2.5rem] bg-transparent disabled:opacity-55 placeholder:text-[#D9D9D9] disabled:cursor-not-allowed"
                             placeholder="Eg: 2 hours"
                             value={hours}
+                            min={1}
                             onChange={(e) => setHours(e.target.value)}
                             disabled={options?.permanent}
                           />
@@ -415,58 +287,67 @@ const AddLocationPopup = ({ open, setOpen }) => {
                       </div>
                     </div>
                   </div>
-                  <button
-                    className="rounded-md text-[#4e7690]"
-                    onClick={() => setOpen(false)}
-                  >
-                    X
-                  </button>
+
                 </div>
               </div>
             )}
 
             {currPage === 3 && (
-              <div className="relative flex items-center justify-center h-screen">
-                <div className="flex justify-center items-center flex-col">
-                  <img
-                    src="/successfully-created.svg"
-                    alt="Successfully created"
+              <>
+              <div className="flex flex-col h-full w-full  ">
+                <div className="w-full items-start flex  justify-end  h-[12%] ">
+                <div className="rounded-full shadow-lg w-8 flex justify-center bg-[#4E7690] items-center h-8">
+                    <button
+                  className=" text-[#4e7690]"
+                  onClick={() => {setOpen(false)
+                  setCurrPage(1)
+                  }}
+                   >
+                  <IoCloseCircleSharp className="text-white w-10 h-10"/>
+                </button>
+                </div>
+                </div>
+                <div className="flex flex-col  gap-4  justify-center items-center">
+                  <img 
+                  src="/successfully-created.svg"
+                  alt="Successfully created"
+                  className="w-[20rem] h-[17rem]"
                   />
-                  <h2>Location Successfully created</h2>
+                  <h2 className=" font-semibold text-lg text-[#101828]">Location successfully created</h2>
                   <button
-                    onClick={() => setOpen(false)}
-                    className="bg-[#4e7690] text-white flex items-center justify-center rounded-md px-4 py-2 mt-4"
+                    onClick={() => {
+                      setOpen(false)
+                      fetchData();
+                    setCurrPage(1)
+                    }}
+                    className="bg-[#4e7690] text-white rounded-lg w-[6rem] h-[2.5rem] text-sm font-medium"
                   >
                     Finish
                   </button>
                   <p
-                    className="text-[#4e7690] underline hover:cursor-pointer "
+                    className="text-[#4e7690] font-medium text-base underline hover:cursor-pointer "
                     onClick={() => setCurrPage(1)}
                   >
                     Add another Location
                   </p>
                 </div>
-                <button
-                  className="absolute top-4 right-4"
-                  onClick={() => setOpen(false)}
-                >
-                  X
-                </button>
               </div>
+              </>
+
             )}
             <div
-              className={`flex justify-between items-end w-full ${
+              className={`flex justify-between items-end w-full  ${
                 currPage === 3 ? "hidden" : ""
               }`}
             >
               <button
-                className="border border-black px-4 py-2 rounded-md"
+                className="border border-[#4E7690] text-[#4E7690] px-8 py-2 rounded-lg text-sm"
                 onClick={handleBack}
               >
                 Back
               </button>
               <button
-                className="rounded-lg text-white bg-[#4E7690] py-3 px-5"
+                className="rounded-lg font-medium text-sm text-white bg-[#4E7690] py-2 px-8"
                 onClick={handleNext}
               >
                 {currPage == 1 ? "Next" : "Create"}

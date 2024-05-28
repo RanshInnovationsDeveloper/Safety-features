@@ -64,45 +64,6 @@ function App() {
 
   const destination1Ref = useRef(null);
 
-  const updateDirections = () => {
-    if (!map || !directionsResponse) return;
-    const route = directionsResponse.routes[0];
-    const leg = route.legs[0];
-
-    let stepIndex = -1;
-    let nextSegment = -1;
-    let steps = [];
-
-    for (let i = 0; i < leg.steps.length; i++) {
-      if (leg.steps[i].distance.value > 50) {
-        nextSegment = leg.steps[i].path;
-        stepIndex = i;
-        steps = leg.steps;
-        break;
-      }
-    }
-
-    if (stepIndex === -1) {
-      stepIndex = 0;
-      nextSegment = leg.steps[0].path;
-      steps = leg.steps;
-    }
-
-    const step = steps[stepIndex];
-    const distanceToNextSegment = window.google.maps.geometry.spherical.computeDistanceBetween(
-      center,
-      nextSegment[0]
-    );
-
-    let instruction = step.instructions.replace(/<[^>]+>/g, "");
-
-    setDirectionsPanel(
-      `<strong>${instruction}</strong> in ${Math.round(
-        distanceToNextSegment
-      )} meters`
-    );
-  };
-
   const darkmode = [
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
@@ -203,7 +164,6 @@ function App() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
-          console.log("position done")
         },
         (error) => {
           console.error("Error watching position:", error);
@@ -227,7 +187,6 @@ function App() {
   }, []);
 
 
-
   const handlemenuclick = async (station) => {
     setDestination2({ lat: station.geometry.location.lat, lng: station.geometry.location.lng });
     const directionsService2 = new window.google.maps.DirectionsService();
@@ -244,6 +203,7 @@ function App() {
   };
   const getNearbySafety = async () => {
     if (!center) return;
+
     const response = await axios.get(
       ` https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=police&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
     );
@@ -267,11 +227,6 @@ function App() {
     getPlaces();
     getNearbySafety();
   }, [center]);
-
-  useEffect(() => {
-    const interval = setInterval(updateDirections, 1000);
-    return () => clearInterval(interval);
-  }, [directionsResponse, map]);
 
   if (!isLoaded) {
     return <SkeletonText />;
@@ -348,6 +303,50 @@ function App() {
 
     setArrowMarkers(arrowMarkers);
   };
+
+  const updateDirections = () => {
+    if (!map || !directionsResponse) return;
+    const route = directionsResponse.routes[0];
+    const leg = route.legs[0];
+
+    let stepIndex = -1;
+    let nextSegment = -1;
+    let steps = [];
+
+    for (let i = 0; i < leg.steps.length; i++) {
+      if (leg.steps[i].distance.value > 50) {
+        nextSegment = leg.steps[i].path;
+        stepIndex = i;
+        steps = leg.steps;
+        break;
+      }
+    }
+
+    if (stepIndex === -1) {
+      stepIndex = 0;
+      nextSegment = leg.steps[0].path;
+      steps = leg.steps;
+    }
+
+    const step = steps[stepIndex];
+    const distanceToNextSegment = window.google.maps.geometry.spherical.computeDistanceBetween(
+      center,
+      nextSegment[0]
+    );
+
+    let instruction = step.instructions.replace(/<[^>]+>/g, "");
+
+    setDirectionsPanel(
+      `<strong>${instruction}</strong> in ${Math.round(
+        distanceToNextSegment
+      )} meters`
+    );
+  };
+
+  useEffect(() => {
+    const interval = setInterval(updateDirections, 1000);
+    return () => clearInterval(interval);
+  }, [directionsResponse, map]);
 
   return (
     <Flex
@@ -613,7 +612,7 @@ function App() {
         </div>
 
         {/* instruction panel */}
-        {/* <div
+        <div
         style={{
           position: "absolute",
           top: 0,
@@ -626,7 +625,7 @@ function App() {
           padding: "10px",
         }}
         dangerouslySetInnerHTML={{ __html: directionsPanel }}
-      ></div> */}
+      ></div>
 
 
       </div>

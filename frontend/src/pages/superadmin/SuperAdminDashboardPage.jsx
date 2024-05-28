@@ -8,7 +8,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import AddLocationPopup from "../../components/admin/AddLocationPopup";
-const Admin=()=>{
+const SuperAdminDashboardPage=()=>{
  const navigate = useNavigate();
  const location = useLocation();
  const [open, setOpen] = useState(false);
@@ -31,13 +31,11 @@ const Admin=()=>{
 
  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
 console.log(linkstart)
-    useEffect(  ()=>{
-
-        if(!localStorage.getItem('token')){
-            navigate(`${linkstart}-login`)
-          } 
-
-      },[localStorage.getItem('token')]);
+    useEffect(() => {
+      if (!localStorage.getItem('token')) {
+        navigate(`superadmin-login`);
+      }
+    }, [localStorage.getItem('token'), navigate]);
 
     return (
       <div className='relative'>
@@ -66,4 +64,4 @@ console.log(linkstart)
     )
 }
 
-export default Admin
+export default SuperAdminDashboardPage

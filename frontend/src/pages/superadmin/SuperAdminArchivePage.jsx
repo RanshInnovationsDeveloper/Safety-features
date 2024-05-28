@@ -1,18 +1,15 @@
 
+import AdminArchive from "../../components/admin/AdminArchive";
+import AdminLocation from "../../components/admin/AdminLocation";
 import AdminNavbar from "../../components/admin/AdminNavbar"
 import AdminSidebar from "../../components/admin/AdminSidebar"
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import AdminDashboard from '../../components/admin/AdminDashboard';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import AddLocationPopup from "../../components/admin/AddLocationPopup";
-const Admin=()=>{
+import axios from "axios";
+import { toast } from "react-toastify";
+const SuperAdminArchivePage=()=>{
  const navigate = useNavigate();
- const location = useLocation();
- const [open, setOpen] = useState(false);
- 
  const [isLoading, setIsLoading] = useState(true);
  const [data, setData] = useState();
  
@@ -29,12 +26,10 @@ const Admin=()=>{
    }
  };
 
- const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
-console.log(linkstart)
     useEffect(  ()=>{
 
         if(!localStorage.getItem('token')){
-            navigate(`${linkstart}-login`)
+            navigate("/admin-login")
           } 
 
       },[localStorage.getItem('token')]);
@@ -44,18 +39,13 @@ console.log(linkstart)
         <AdminNavbar/>
         <div className="w-full flex">
         <div className="flex items-start justify-between w-full mt-[4.5rem]">
-          <div className="w-[80px] md:w-[300px] sticky top-[5rem] ">
-            <AdminSidebar active={1} fetchData={fetchData} open={open} setOpen={setOpen}  />
+          <div className="w-[80px] md:w-[300px] sticky top-[5rem] z-50">
+            <AdminSidebar active={5} fetchData={fetchData} />
           </div>
           <div className="flex flex-col justify-center relative w-full p-4  mt-2">
             <div>
-            <AdminDashboard isLoading={isLoading} setIsLoading={setIsLoading}  data={data} fetchData={fetchData} />
-            {/* <AddLocationPopup/> */}
+            <AdminArchive/>
             </div>
-            {open && <div>
-              <AddLocationPopup open={open} setOpen={setOpen} fetchData={fetchData}/>
-              </div>}
-            
            
           </div>
         </div>
@@ -66,4 +56,4 @@ console.log(linkstart)
     )
 }
 
-export default Admin
+export default SuperAdminArchivePage

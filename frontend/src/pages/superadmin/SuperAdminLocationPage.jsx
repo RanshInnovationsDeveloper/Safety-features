@@ -8,7 +8,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import AddLocationPopup from "../../components/admin/AddLocationPopup";
-const Admin=()=>{
+const SuperAdminLocaionPage=()=>{
  const navigate = useNavigate();
  const location = useLocation();
  const [open, setOpen] = useState(false);
@@ -66,4 +66,4 @@ console.log(linkstart)
     )
 }
 
-export default Admin
+export default SuperAdminLocaionPage

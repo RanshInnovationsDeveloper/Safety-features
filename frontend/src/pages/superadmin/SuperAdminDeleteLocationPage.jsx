@@ -3,7 +3,7 @@ import AdminNavbar from "../../components/admin/AdminNavbar";
 import AdminSidebar from "../../components/admin/AdminSidebar";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-const AdminDeleteLocationPage = () => {
+const SuperAdminDeleteLocationPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,4 +31,4 @@ const AdminDeleteLocationPage = () => {
   );
 };
 
-export default AdminDeleteLocationPage;
+export default SuperAdminDeleteLocationPage;
