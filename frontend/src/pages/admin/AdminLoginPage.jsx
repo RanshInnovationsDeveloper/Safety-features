@@ -9,7 +9,10 @@ export default function AdminLoginPage() {
 
   const location = useLocation();
 
-  const linkstart = location.pathname.substring(0, location.pathname.indexOf('-'));
+  const linkstart = location.pathname.substring(
+    0,
+    location.pathname.indexOf("-")
+  );
   useEffect(() => {
     if (localStorage.getItem("token")) {
       navigate(`${linkstart}-dashboard`);
