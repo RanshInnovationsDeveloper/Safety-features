@@ -22,8 +22,6 @@ import {
   import { useContext, useRef, useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
   
-  // let dest
-  // let center = { lat: 29.6857, lng: 76.9905 }
   function AddLocationMap({style,setCity,setPincode,setState,setCountry,setCoordinates,setName,setAddress}) {
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: "AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI",
@@ -32,7 +30,8 @@ import { toast } from 'react-toastify';
     const { places, addPlace, deletePlace, editPlace, getPlaces,getCoordinates, userCoordinates } = useContext(pageContext);
     const [map, setMap] = useState(/** @type google.maps.Map */(null))
     const [directionsResponse, setDirectionsResponse] = useState(null)
-    const [center, setCenter] = useState({ lat: 28.964710, lng: 76.295952 });
+    const [center, setCenter] = useState({ lat: 0.0, lng: 0.0 });
+    const [clicked, setClicked] = useState(null);
     // const [name, setName] = useState('');
     // const [address, setAddress] = useState('');
     // const [coordinates, setCoordinates] = useState('');
@@ -48,8 +47,6 @@ import { toast } from 'react-toastify';
     
     useEffect(() => {
       getPlaces();
-      // comment this after login and signup is made
-    //   localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjYxMzYwMjM2MmFiYmE3YWY4ZTA1OTNmIn0sImlhdCI6MTcxMjU0NTgyN30.wkRD4c2f2BLt58YG74XycTGIYS5nR6c777pRW9K8g3g");
       getCoordinates();
     }, []);
   
@@ -71,7 +68,10 @@ import { toast } from 'react-toastify';
         // Get latitude and longitude of the clicked location
         const clickedLat = e.latLng.lat();
         const clickedLng = e.latLng.lng();
-    
+        setClicked({
+            lat: clickedLat,
+            lng: clickedLng,
+        })
         // Calculate the distance between the clicked location and the center => assigned place
         const distance = calculateDistance(center.lat, center.lng, clickedLat, clickedLng);
     
@@ -232,9 +232,10 @@ import { toast } from 'react-toastify';
                     }}
                     onLoad={map => setMap(map)}
                 >
-  
-                    <Marker position={center} />
                     {policeStations.map((station, index) => (
+                        <>
+                        <Marker position={center} />
+                        <Marker position={marking} />
                         <Marker
                             key={index}
                             position={{ lat: station.geometry.location.lat, lng: station.geometry.location.lng }}
@@ -244,6 +245,7 @@ import { toast } from 'react-toastify';
                             }}
                             title={station.name}
                         />
+                        </>
                     ))}
                     {places.map((station, index) => (
                         <Marker
@@ -256,7 +258,6 @@ import { toast } from 'react-toastify';
                             title={station.address}
                         />
                     ))}
-                    <Marker position={marking} />
                     {directionsResponse && (
                         <DirectionsRenderer directions={directionsResponse} />
                     )}
