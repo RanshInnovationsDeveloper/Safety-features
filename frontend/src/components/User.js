@@ -22,7 +22,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import './styles/User.css';
 import { IoCloseCircleSharp, IoSearchCircleSharp } from "react-icons/io5";
-import {calculateDateDifferenceInHours} from '../commonly used functions/functions'
+import { calculateDateDifferenceInHours } from '../commonly used functions/functions'
 import { IoMdCloseCircle } from "react-icons/io";
 
 function App() {
@@ -32,6 +32,7 @@ function App() {
   });
 
   const { places, addPlace, deletePlace, editPlace, getPlaces, archiveplace } = useContext(pageContext);
+  const [autocomplete, setAutocomplete] = useState(null);
   const [center, setCenter] = useState({ lat: null, lng: null });
   const [map, setMap] = useState(null);
   const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -63,6 +64,10 @@ function App() {
   }
 
   const destination1Ref = useRef(null);
+
+  const onLoad = (autocompleteInstance) => {
+    setAutocomplete(autocompleteInstance);
+  };
 
   const updateDirections = () => {
     if (!map || !directionsResponse) return;
@@ -192,7 +197,7 @@ function App() {
     setDistance('');
     setDuration('');
   };
-  
+
   useEffect(() => {
     let watchId;
 
@@ -257,7 +262,7 @@ function App() {
 
   const handleButtonClick = async (props) => {
     const res = await axios.get(
-     `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=${props}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${center.lat},${center.lng}&radius=5000&type=${props}&key=AIzaSyBVzhfAB_XLqaayJkOSuThEdaK4vifdxAI`
     );
     setClicked(res.data.results)
   };
@@ -276,7 +281,7 @@ function App() {
   if (!isLoaded) {
     return <SkeletonText />;
   }
-  console.log(center)
+  console.log(places)
 
   const handleMarkerClick = async (event) => {
     await clearRoute(); // Clear the previous route
@@ -297,6 +302,35 @@ function App() {
     setDuration(results.routes[0].legs[0].duration.text);
     setModal(true); // Open modal when marker is clicked()
   };
+
+  const onPlaceChanged = async () => {
+    if (autocomplete !== null) {
+      const place = autocomplete.getPlace();
+      const location = place.geometry?.location;
+      if (location) {
+        await clearRoute();
+        destination1Ref.current = { lat: location.lat(), lng: location.lng() };
+        let directionsService = new window.google.maps.DirectionsService();
+        let results = await directionsService.route({
+          origin: center,
+          destination: destination1Ref.current,
+          // eslint-disable-next-line no-undef
+          travelMode: google.maps.TravelMode.WALKING,
+        });
+
+        setDirectionsResponse(results);
+
+        setDistance(results.routes[0].legs[0].distance.text);
+        setDuration(results.routes[0].legs[0].duration.text);
+        setModal(true); // Open modal when marker is clicked()
+
+      } else {
+        console.error("No location data available for the selected place");
+      }
+    } else {
+      console.error("Autocomplete is not loaded yet!");
+    }
+  }
 
   const calculateBearing = (p1, p2) => {
     if (!p1 || !p2 || !p1.lat || !p1.lng || !p2.lat || !p2.lng) {
@@ -372,9 +406,9 @@ function App() {
           }}
           onLoad={(map) => setMap(map)}
         >
-            {arrowMarkers.map((marker, index) => (
+          {arrowMarkers.map((marker, index) => (
             <Marker key={index} position={marker.position} icon={marker.icon} />
-            ))}
+          ))}
 
           {policeStations.map((station, index) => (
             <>
@@ -412,18 +446,19 @@ function App() {
             </>
           ))}
           {places.map((station, index) => (
-            station.active==station.createdAt?
-                     ( <Marker
-                          key={index}
-                          position={{ lat: station.coordinates[0], lng: station.coordinates[1] }}
-                          icon={{
-                              url: 'police-badge.png', // URL of the marker icon
-                              scaledSize: new window.google.maps.Size(32, 32) // Adjust the size as needed
-                          }}
-                          title={station.address}
-                      />)
-                      :null
-                  ))}
+            station.active == station.createdAt ?
+              (<Marker
+                key={index}
+                position={{ lat: station.coordinates[0], lng: station.coordinates[1] }}
+                // icon={{
+                //     url: 'police-badge.png', // URL of the marker icon
+                //     scaledSize: new window.google.maps.Size(32, 32) // Adjust the size as needed
+                // }}
+                title={station.address}
+                onClick={handleMarkerClick}
+              />)
+              : null
+          ))}
 
           {directionsResponse && (
             <>
@@ -460,7 +495,7 @@ function App() {
                 <HStack spacing={4} justifyContent="space-between">
                   <div className="rounded-full flex flex-row justify-center items-center px-4 gap-2 bg-black bg-opacity-5 m-2 ">
                     <FaLocationDot />
-                    <Autocomplete>
+                    <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
                       <input
                         type="text"
                         className="focus:outline-none  w-[20rem] h-[3.4rem] rounded-full bg-transparent  placeholder:text-[#1F2521]"
