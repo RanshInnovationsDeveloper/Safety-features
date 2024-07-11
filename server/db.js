@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 
 exports.dbConnection =async()=>{
     mongoose.set('strictQuery',true)
-    const mongourl = 'mongodb+srv://shubhamsingalransh:Abc123@cluster0.4bgy5md.mongodb.net/';
+    const mongourl = process.env.MONGO_URL;
     await mongoose.connect(mongourl)
         .then(()=>{
             console.log('Db Connected')
